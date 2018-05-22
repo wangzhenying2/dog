@@ -5,9 +5,9 @@
     </div>
     <div class="nav">
       <div class="navcont">
-        <span v-for="nav in navs" @click="navEvent(nav.name)">
-            {{nav.text}}
-        </span>
+        <router-link v-for="nav in navs" :to="{path:`/list/${nav.type}`}"  :key="nav.type">
+          {{nav.text}}
+        </router-link> 
       </div>
     </div>
   </div>
@@ -42,17 +42,17 @@ export default {
   margin: 0 auto;
 }
 
-.navcont span {
+.navcont a {
   display: inline-block;
   width: 20%;
   padding: 10px 0;
   line-height: 2em;
   font-size: 16px;
   text-align: center;
-  cursor: pointer;
+  color: #fff;
 }
 
-.navcont span:hover {
+.navcont a:hover {
   background-color: #0B436A;
 }
 

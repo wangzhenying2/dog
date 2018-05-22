@@ -4,13 +4,15 @@
   <dog-breadcrumb :title="crumbtitle"></dog-breadcrumb>
   <!--正文内容-->
   <div class="p10">
-    <h1>{{group.title}}</h1>
-    <h2>
-      发布时间：{{group.date}}
-      <span :class="{'thumb': true, 'thumbon': isThumbon}" @click="toThumb"></span>
-      <span>{{group.thumb}}</span>
-    </h2>
-    <div v-html="group.cont"></div>
+    <div class="title" data-value="object_name">母狗产后怎么补钙？幼犬需要补钙吗？</div>
+    <div class="source-info">
+      <span class="date" data-value="object_date" data-filter="date">2018-01-19</span>
+      <span class="ask-count"><i data-value="reply_num">0</i>个评论</span>
+      <span class="support" data-id="33837" data-islike="0">
+        <img src="http://img1.goumin.com/cms/aichong/day_180123/20180123_3b8e2aa.png" class="likeimg33837"><i class="support33837">0</i>
+      </span>
+    </div>
+    <div class="ask-detail" data-value="object_content"></div>
   </div>
 </div>
 </template>

@@ -124,9 +124,12 @@ router.post('/api/savePwd', (req, res) => {
 })
 // 爬虫抓取工具
 router.post('/api/crawler', (req, res) => {
+  let { type } = req.body
 
-  // 抓取图片
+  let page = 1
+  // 抓取图片-公用
   let cImg = new Crawler({
+    maxConnections: 100,
     encoding: null,
     jQuery: false,
     callback: function (err1, res1, done) {
@@ -141,81 +144,126 @@ router.post('/api/crawler', (req, res) => {
       done()
     }
   })
-  // 抓取基本数据（标题，描述，图片原始src）
+
+  // 抓取详情页-公用
+  let cDetail = new Crawler({
+    maxConnections: 100
+  })
+
+  // 抓取基本数据（标题，描述，图片）
   let c = new Crawler({
     maxConnections: 10,
     callback: function (err, result, done) {
       if (err) {
         console.log(err)
       } else {
-        let data = []
+        let param = []
         let $ = result.$
+        // 判断是否有数据
+        if ($('.content .con-l li').length == 0) {
+          return
+        }
         $('.content .con-l li').each((i, elem) => {
           let _this = $(elem)
           let _img = _this.find('.list-m img')
-          data.push({
+          param.push({
             linkto: _this.find('.title a').attr('href'),
             title: _this.find('.title a').text(),
-            desc: _this.find('.desc').text(),
+            desc: _this.find('.desc').text() + '...',
             type: result.options.type,
             imgOrigin: (_img.length > 0 ? _img.attr('src') : '')
           })
         })
-        // 数据库插入数据
-        db.art.insertMany(data, (err, data) => {
+
+        // 数据库插入基本数据（标题，描述，图片原始src）
+        db.art.insertMany(param, (err, data) => {
           if (err) {
+            console.log('插入一组数据')
             console.log(err)
           } else {
+            let imgArr = []
 
             // 判断static/art文件夹是否存在，不存在就创建
             let artPath = path.resolve(__dirname, '../static/art')
             if (!fs.existsSync(artPath)) {
               fs.mkdirSync(artPath)
             }
-            data.map((value, index, arr) => {
 
-              // 判断抓取title图片
+            data.map((value, index) => {
+              // 抓取title图片
               let imgOrigin = value.imgOrigin
+              let imgOriginName = imgOrigin.substring(imgOrigin.lastIndexOf('/') + 1)
               if (imgOrigin !== '') {
-                let filepath = artPath + '/' + value._id
-                let filename = '0' + imgOrigin.substring(imgOrigin.lastIndexOf('.'), imgOrigin.length)
-                cImg.queue({
+                imgArr.push({
                   uri: imgOrigin,
-                  filepath: filepath,
-                  filename: filename
+                  filepath: artPath + '/' + value._id,
+                  filename: imgOriginName
                 })
               }
-              
+
               // 抓取详情
               if (value.linkto) {
-                
-                c.queue({
+                cDetail.queue({
                   uri: 'http://news.goumin.com/' + value.linkto,
-                  callback: function (err, result, done) {
-                    if (err) {
-                      console.log(err)
+                  callback: function (err2, res2, done) {
+                    if (err2) {
+                      console.log(index)
+                      console.error(err2.stack)
                     } else {
-                      let $ = result.$
-                      let cont = $('.ask-detail').html()
-                      console.log(cont)
+                      let $ = res2.$
+                      let cont = ''
+                      $('.ask-detail').find('p').each(function (i, elem) {
+                        let imgsrc = $(this).find('img').attr('src')
+                        if (imgsrc) {
+                          let filename = imgsrc.substring(imgsrc.lastIndexOf('/') + 1)
+                          cont += '<p><img src="./static/art/' + value._id + '/' + filename + '" style="width:500px"/></p>'
+                          imgArr.push({
+                            uri: imgsrc,
+                            filepath: artPath + '/' + value._id,
+                            filename: filename
+                          })
+                        } else {
+                          cont += '<p>' + $(this).text() + '</p>'
+                        }
+                      })
+                      // 根据_id更新cont详情字段
+                      db.art.findByIdAndUpdate(value._id, { cont: cont, imgOrigin: '/' + value._id + '/' + imgOriginName }, function (err3, data3) {
+                        if (err3) {
+                          console.log('根据_id更新cont')
+                          console.log(err3)
+                        }
+                      })
+
+                      // 抓取所有图片
+                      imgArr.map((val, index) => {
+                        cImg.queue(val)
+                      })
                     }
+                    done()
                   }
                 })
-
               }
-
               return value
             })
           }
         })
-        res.send({ data: data })
+
       }
       done()
     }
   })
-  c.queue({
-    uri: 'http://news.goumin.com/yhxl/',
-    type: 'yhxl'
-  })
+
+  function start () {
+    c.queue({
+      uri: 'http://news.goumin.com/' + type + '/' + (page > 1 ? page + '.html' : ''),
+      type: type
+    })
+    if (page < 2) {
+      page ++
+      start ()
+    }
+  }
+  // 开始抓取
+  start ()
 })
 module.exports = router

@@ -10,19 +10,19 @@ const store = new Vuex.Store({
   state: {
     navs: [{
       text: '业界资讯',
-      name: 'yjzx'
+      type: 'yjzx'
     }, {
       text: '产品时尚',
-      name: 'cpss'
+      type: 'cpss'
     }, {
       text: '犬界轶事',
-      name: 'qjys'
+      type: 'qjys'
     }, {
       text: '超级访谈',
-      name: 'cjft'
+      type: 'cjft'
     }, {
       text: '养护训练',
-      name: 'yhxl'
+      type: 'yhxl'
     }],
     showdialog: false,
     listdata: [],

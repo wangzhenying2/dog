@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <dog-list :data="funArticles"></dog-list>
+    <dog-list :data="{type: type, articles: articles}"></dog-list>
   </div>
 </template>
 <script>
@@ -15,12 +15,21 @@ export default {
     'dog-list': dogList
   },
   data() {
-    return {}
+    return {
+      type: ''
+    }
   },
   created() {
-    this.getArts({ type: 1 })
+    this.type = this.$route.params.type
+    this.getArts({ type: this.type })
   },
-  computed: mapState(['funArticles']),
+  watch: {
+    '$route' (to, from) {
+      this.type = this.$route.params.type
+      this.getArts({ type: this.type })
+    }
+  },
+  computed: mapState(['articles']),
   methods: {
     ...mapActions(['getArts'])
   }

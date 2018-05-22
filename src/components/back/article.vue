@@ -7,8 +7,7 @@
       <el-table-column prop="_id" label="ID" width="230px" header-align="center"></el-table-column>
       <el-table-column prop="title" label="标题" width="200px" header-align="center"></el-table-column>
       <el-table-column prop="createtime" label="创建日期" width="180px" align="center"></el-table-column>
-      <el-table-column prop="imgsrc" label="标题图片地址" width="150px" align="center"></el-table-column>
-      <el-table-column prop="desc" label="描述" align="center"></el-table-column>
+      <el-table-column prop="desc" label="描述" header-align="center"></el-table-column>
       <el-table-column label="操作" align="center" width="150px">
         <template scope="scope">
           <el-button type="success" size="small" @click="addFun(scope.row)">编辑</el-button>
@@ -20,9 +19,6 @@
       <el-form :model="form" label-width="150px">
         <el-form-item label="标题">
           <el-input type="textarea" v-model="form.title" :autosize="true" style="width:50%"></el-input>
-        </el-form-item>
-        <el-form-item label="标题图片地址">
-          <el-input type="textarea" v-model="form.imgsrc" :autosize="true" style="width:50%"></el-input>
         </el-form-item>
         <el-form-item label="描述">
           <el-input type="textarea" v-model="form.desc" :autosize="true" style="width:50%"></el-input>

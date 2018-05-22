@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="list-group" v-for="item in items">
+    <div class="list-group" v-for="item in items" :key="item._id">
       <div class="list-t">
         <span class="title"><a :href="item.linkto">{{ item.title }}</a></span>
         <span class="created">{{ item.createtime }}</span>
       </div>
       <div class="list-m">
-        <div class="pic" v-if="item.imgsrc"><img :src="item.imgsrc"></div>
+        <div class="pic" v-if="item.imgOrigin"><img :src="`static/art${item.imgOrigin}`"></div>
         <div class="list-m-r">
           <a :href="item.linkto" class="desc">{{ item.desc }}</a>
         </div>
@@ -24,22 +24,25 @@
 export default {
   data () {
     return {
-      items: this.data
+      items: []
     }
   },
+  created () {
+    this.items = this.data.articles
+  },
   props: {
+    data: Object
+  },
+  watch: {
     data: {
-      type: Object,
-      default () {
-        return {
-          title: '123',
-          linkto: '',
-          createtime: '12122121',
-          imgsrc: '',
-          desc: 'aaaaaaaaaaaaaaaaaa'
-        }
-      }
+      handler (newValue, oldValue) {
+        this.items = newValue.articles
+      },
+      deep: true
     }
+  },
+  methods: {
+
   }
 }
 </script>
