@@ -21,23 +21,23 @@
 </template>
 <script>
 export default {
-  data() {
+  data () {
     return {
       style: ''
     }
   },
   props: ['title', 'width'],
   watch: {
-    data(val, oldVal) {
+    data (val, oldVal) {
     }
   },
-  mounted() {
+  mounted () {
     this.style = 'width:' + this.width
   },
-  methods:{
-    init() {
+  methods: {
+    init () {
     },
-    closeEvent() {
+    closeEvent () {
       this.$emit('close')
     }
   }

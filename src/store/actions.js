@@ -6,11 +6,12 @@ export default {
   getArts ({ commit }, param) {
     return Vue.http.post('/api/getArts', param)
       .then(res => {
-        let data = res.data
-        data.forEach((item) => {
+        let result = res.data.result
+        result.forEach((item) => {
           item.createtime = moment(item.createtime).format('YYYY-MM-DD HH:mm:ss')
         })
-        commit('SET_FUNARTICLES', data)
+        commit('SET_ARTS', res.data)
+        return res.data
       })
   },
   // 文章-新增

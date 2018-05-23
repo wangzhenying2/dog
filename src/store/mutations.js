@@ -1,7 +1,7 @@
 export default {
   // 文章公用
-  SET_FUNARTICLES: (state, articles) => {
-    state.articles = articles
+  SET_ARTS: (state, articles) => {
+    state.articles = articles.result
   },
   // 登录信息
   SET_USER: (state, userinfo) => {

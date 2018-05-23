@@ -4,9 +4,10 @@ const express = require('express')
 const path = require('path')
 const router = express.Router()
 const multiparty = require('multiparty')
-var Crawler = require('crawler')
+const Crawler = require('crawler')
 const fs = require('fs')
 const fn = () => {}
+const async = require('async')
 
 /* 上传 */
 router.post('/api/uploadimg', function (req, res, next) {
@@ -72,11 +73,31 @@ router.post('/api/login', (req, res) => {
 })
 // 文章-get
 router.post('/api/getArts', (req, res) => {
-  db.art.find(req.body, (err, doc) => {
+  let param = req.body
+  let sort = param.sort || ''
+  let start = (param.page - 1) * param.pagesize
+  async.parallel({
+    count: function (done) { // 查询数量
+      db.art.count(param.query).exec(function (err, count) {
+        done(err, count)
+      })
+    },
+    records: function (done) { // 查询一页的记录
+      db.art.find(param.query).skip(start).limit(param.pagesize).sort(sort).exec(function (err, doc) {
+        done(err, doc)
+      })
+    }
+  }, function (err, results) {
     if (err) {
       console.log(err)
-    } else if (doc) {
-      res.send(JSON.stringify(doc))
+    } else {
+      let $page = {
+        page: param.page,
+        pagesize: param.pagesize,
+        total: results.count,
+        result: results.records
+      }
+      res.send(JSON.stringify($page))
     }
   })
 })
@@ -216,7 +237,7 @@ router.post('/api/crawler', (req, res) => {
                         let imgsrc = $(this).find('img').attr('src')
                         if (imgsrc) {
                           let filename = imgsrc.substring(imgsrc.lastIndexOf('/') + 1)
-                          cont += '<p><img src="./static/art/' + value._id + '/' + filename + '" style="width:500px"/></p>'
+                          cont += '<p class="imgOut"><img src="./static/art/' + value._id + '/' + filename + '" style="width:500px"/></p>'
                           imgArr.push({
                             uri: imgsrc,
                             filepath: artPath + '/' + value._id,
@@ -253,17 +274,17 @@ router.post('/api/crawler', (req, res) => {
     }
   })
 
-  function start () {
+  function start() {
     c.queue({
       uri: 'http://news.goumin.com/' + type + '/' + (page > 1 ? page + '.html' : ''),
       type: type
     })
     if (page < 2) {
-      page ++
-      start ()
+      page++
+      start()
     }
   }
   // 开始抓取
-  start ()
+  start()
 })
 module.exports = router

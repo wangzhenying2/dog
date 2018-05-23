@@ -2,13 +2,15 @@
   <div>
     <div class="list-group" v-for="item in items" :key="item._id">
       <div class="list-t">
-        <span class="title"><a :href="item.linkto">{{ item.title }}</a></span>
+        <span class="title">
+          <router-link :to="{path:`/detail/${item._id}`}">{{ item.title }}</router-link>
+        </span>
         <span class="created">{{ item.createtime }}</span>
       </div>
       <div class="list-m">
         <div class="pic" v-if="item.imgOrigin"><img :src="`static/art${item.imgOrigin}`"></div>
         <div class="list-m-r">
-          <a :href="item.linkto" class="desc">{{ item.desc }}</a>
+          <router-link :to="{path:`/detail/${item._id}`}" class="desc">{{ item.desc }}</router-link>
         </div>
       </div>
       <div class="list-b">
