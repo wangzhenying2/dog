@@ -8,52 +8,84 @@ const db = mongoose.connection
 db.once('error', () => console.log('Mongo connection error'))
 db.once('open', () => console.log('Mongo connection successed'))
 /* ************* 定义模式loginSchema ************* */
-const loginSchema = mongoose.Schema({
-  name: String,
-  pwd: String
+const userSchema = mongoose.Schema({
+    name: {
+        type: String,
+        default: ''
+    },
+    pwd: {
+        type: String,
+        default: ''
+    },
+    createtime: {
+        type: Date,
+        default: Date.now
+    }
 })
 const artSchema = mongoose.Schema({
-  type: {
-    type: String,
-    default: ''
-  },
-  title: {
-    type: String,
-    default: ''
-  },
-  createtime: {
-    type: Date,
-    default: Date.now
-  },
-  linkto: {
-    type: String,
-    default: ''
-  },
-  imgOrigin: {
-    type: String,
-    default: ''
-  },
-  desc: {
-    type: String,
-    default: ''
-  },
-  cont: {
-    type: String,
-    default: ''
-  },
-  replysum: {
-    type: Number,
-    default: 0
-  },
-  likesum: {
-    type: Number,
-    default: 0
-  }
+    type: {
+        type: String,
+        default: ''
+    },
+    title: {
+        type: String,
+        default: ''
+    },
+    createtime: {
+        type: Date,
+        default: Date.now
+    },
+    linkto: {
+        type: String,
+        default: ''
+    },
+    imgOrigin: {
+        type: String,
+        default: ''
+    },
+    desc: {
+        type: String,
+        default: ''
+    },
+    cont: {
+        type: String,
+        default: ''
+    }
+})
+const commentSchema = mongoose.Schema({
+    userid: {
+        type: String,
+        default: ''
+    },
+    cont: {
+        type: String,
+        default: ''
+    },
+    createtime: {
+        type: Date,
+        default: Date.now
+    }
+})
+const likeSchema = mongoose.Schema({
+    userid: {
+        type: String,
+        default: ''
+    },
+    artid: {
+        type: String,
+        default: ''
+    },
+    createtime: {
+        type: Date,
+        default: Date.now
+    }
 })
 /* ************* 定义模型Model ************* */
 const Models = {
-  Login: mongoose.model('Login', loginSchema),
-  art: mongoose.model('art', artSchema)
+    user: mongoose.model('user', userSchema),
+    art: mongoose.model('art', artSchema),
+    comment: mongoose.model('comment', commentSchema),
+    like: mongoose.model('like', likeSchema)
 }
 
 module.exports = Models

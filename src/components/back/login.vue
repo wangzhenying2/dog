@@ -18,39 +18,39 @@
 import {mapActions} from 'vuex'
 import {set} from '../../assets/js/cookieUtil'
 export default {
-    data() {
-            return {
-                name: '',
-                pwd: '',
-                tip: ''
+    data () {
+        return {
+            name: '',
+            pwd: '',
+            tip: ''
+        }
+    },
+    methods: {
+        doLogin () {
+            // 验证
+            if (this.name === '') {
+                return this.tip = '请输入账号！'
             }
-        },
-        methods: {
-            doLogin() {
-                // 验证
-                if (this.name == '') {
-                    return this.tip = '请输入账号！'
-                }
-                if (this.pwd.length < 6) {
-                    return this.tip = '请输入密码，不低于6位'
-                }
-                // 登录
-                this.login({name: this.name, pwd: this.pwd})
-                  .then(() => {
+            if (this.pwd.length < 6) {
+                return this.tip = '请输入密码，不低于6位'
+            }
+            // 登录
+            this.login({name: this.name, pwd: this.pwd})
+                .then(() => {
                     const date = new Date(Date.now() + 60000 * 30)
                     set('user', this.name, date, '/', window.location.hostname)
                     this.$router.push({name: 'fun'})
-                }).catch(msg => {this.tip = msg})
-            },
-            cleartip() {
-                this.tip = ''
-            },
-            ...mapActions(['login'])
+                }).catch(msg => { this.tip = msg })
         },
-        watch: {
-            name: 'cleartip',
-            pwd: 'cleartip'
-        }
+        cleartip () {
+            this.tip = ''
+        },
+        ...mapActions(['login'])
+    },
+    watch: {
+        name: 'cleartip',
+        pwd: 'cleartip'
+    }
 }
 </script>
 <style scoped>

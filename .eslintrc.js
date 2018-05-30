@@ -19,6 +19,10 @@ module.exports = {
   'rules': {
     // allow paren-less arrow functions
     'arrow-parens': 0,
+    // 缩进
+    'indent': [1, 4],
+    //return 语句中不能有赋值表达式
+    'no-return-assign': 0,
     // allow async-await
     'generator-star-spacing': 0,
     // allow debugger during development

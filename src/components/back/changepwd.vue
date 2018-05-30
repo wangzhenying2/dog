@@ -16,35 +16,35 @@
 </template>
 <script>
 export default {
-    data() {
+    data () {
         return {
             pwd: '',
             repwd: ''
         }
     },
     methods: {
-        saveSubmit() {
+        saveSubmit () {
             if (this.pwd.length < 6) {
-                this.$message.error('请输入不低于6位的新密码！');
-                return;
+                this.$message.error('请输入不低于6位的新密码！')
+                return
             }
-            if (this.repwd == '') {
-                this.$message.error('请再次输入新密码！');
-                return;
+            if (this.repwd === '') {
+                this.$message.error('请再次输入新密码！')
+                return
             }
-            if (this.pwd != this.repwd) {
-                this.$message.error('两次输入新密码不一致！');
-                return;
+            if (this.pwd !== this.repwd) {
+                this.$message.error('两次输入新密码不一致！')
+                return
             }
             this.$store.dispatch('savePwd', this.pwd).then((data) => {
                 if (data.data.success) {
-                    this.$message.success('密码修改成功！');
+                    this.$message.success('密码修改成功！')
                 } else {
-                    this.$message.error(data.data.msg);
+                    this.$message.error(data.data.msg)
                 }
             }).catch(() => {})
         },
-        resetForm() {
+        resetForm () {
             this.pwd = this.repwd = ''
         }
     }

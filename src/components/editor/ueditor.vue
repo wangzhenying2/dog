@@ -20,13 +20,13 @@ export default {
         }
     },
     watch: {
-        value(val, oldVal) {
+        value (val, oldVal) {
             if (val !== null) {
                 this.initEditor()
             }
         }
     },
-    data() {
+    data () {
         return {
             fileArg: {
                 width: '*',
@@ -37,39 +37,38 @@ export default {
             frameSrc: 'static/ueditor/editor.html'
         }
     },
-    mounted() {
+    mounted () {
         this.$nextTick(() => {
             this.initEditor()
             // 临听子iframe及孙子iframe事件
             window.addEventListener('message', (e) => {
-                if (typeof e.data == 'string') {
+                if (typeof e.data === 'string') {
                     var data = JSON.parse(e.data)
                     switch (data.ret) {
-                        case 'change':
-                            this.$emit('change', data.content)
-                            break
-                        case 'upload':
-                            // 清空之前的列表
-                            this.fileList = []
-                            document.querySelector('.el-upload').click()
-                            break
-                        default:
-                            break
+                    case 'change':
+                        this.$emit('change', data.content)
+                        break
+                    case 'upload':
+                        // 清空之前的列表
+                        this.fileList = []
+                        document.querySelector('.el-upload').click()
+                        break
+                    default:
+                        break
                     }
                 }
-                
             }, false)
         })
     },
     methods: {
-        initEditor() {
+        initEditor () {
             let data = {
                 ret: 'init',
                 content: this.value
             }
             window.frames[0].postMessage(JSON.stringify(data), '*')
         },
-        onUploadSuccess(res, file, list) {
+        onUploadSuccess (res, file, list) {
             this.fileList.push({
                 name: res.filename,
                 url: res.path

@@ -18,7 +18,7 @@ export default {
     name: 'header',
 
     methods: {
-        onLogout() {
+        onLogout () {
             unset('user', '/', window.location.hostname)
             this.SET_USER({name: '', pwd: ''})
             this.$router.push({name: 'login'})
@@ -26,7 +26,7 @@ export default {
         ...mapMutations(['SET_USER'])
     },
     computed: {
-        name() {
+        name () {
             return get('user')
         }
     }
