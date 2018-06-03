@@ -82,10 +82,10 @@ const likeSchema = mongoose.Schema({
 })
 /* ************* 定义模型Model ************* */
 const Models = {
-    user: mongoose.model('user', userSchema),
-    art: mongoose.model('art', artSchema),
-    comment: mongoose.model('comment', commentSchema),
-    like: mongoose.model('like', likeSchema)
+    User: mongoose.model('user', userSchema),
+    Art: mongoose.model('art', artSchema),
+    Comment: mongoose.model('comment', commentSchema),
+    Like: mongoose.model('like', likeSchema)
 }
 
 module.exports = Models

@@ -61,18 +61,6 @@ export default {
             }
         })
     },
-
-    // 注册-提交
-    register ({ commit }, param) {
-        return Vue.http.post('/api/register', param)
-        .then(response => {
-            if (response.data.state === 1) {
-                commit('SET_USER', param)
-            } else {
-                return Promise.reject(response.data.msg)
-            }
-        })
-    },
     
     // 爬虫工具-抓取数据
     crawler ({ state, commit }, param) {

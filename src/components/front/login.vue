@@ -1,121 +1,89 @@
 <template>
-    <div>
-        <div class="logo">
-            
-        </div>
-        <div class="loginOut">
-            <table>
-                <tr>
-                    <td>
-                        <div class="loginLeft"></div>
-                    </td>
-                    <td>
-                        <div class="loginInfo">
-                            <div>用户名：<input type="text" v-model.trim="name">
-                            </div>
-                            <div>密　码：<input type="password" v-model.trim="pwd">
-                            </div>
-                            <div class="tip">{{tip}}</div>
-                            <a href="javascript:;" class="link1" @click="doLogin">登录</a>
-                            <router-link :to="{name: 'register'}" >去注册</router-link> 
-                        </div>
-                    </td>
-                </tr>
-            </table>
+    <div class="loginOut">
+        <div class="loginInfo">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>登录</span>
+              </div>
+              <div>
+                <div class="each">
+                    <el-input v-model="name" placeholder="请输入用户名"></el-input>
+                </div>
+                <div class="each">
+                    <el-input v-model="pwd" placeholder="请输入密码"></el-input>
+                </div>
+                <div class="each">
+                    <el-button type="warning" @click="doRegister">登录</el-button>
+                </div>
+                <div class="each">
+                    <router-link :to="{name: 'register'}" ><el-button type="text">去注册</el-button></router-link>
+                </div>
+              </div>
+            </el-card>
         </div>
     </div>
-    
 </template>
 <script>
-import {mapActions} from 'vuex'
 import {set} from '../../assets/js/cookieUtil'
+import ajax from '../../assets/js/ajax'
+
 export default {
     data () {
         return {
             name: '',
-            pwd: '',
-            tip: ''
+            pwd: ''
         }
     },
     methods: {
-        doLogin() {
+        doRegister () {
             // 验证
-            if (this.name == '') {
-                return this.tip = '请输入账号！'
+            if (this.name === '') {
+                this.$message({
+                    type: 'warning',
+                    message: '请输入用户名！',
+                    showClose: true
+                })
+                return
             }
             if (this.pwd.length < 6) {
-                return this.tip = '请输入密码，不低于6位'
+                this.$message({
+                    type: 'warning',
+                    message: '请输入密码，不低于6位',
+                    showClose: true
+                })
+                return
             }
+
             // 登录
-            this.login({name: this.name, pwd: this.pwd})
-              .then(() => {
-                const date = new Date(Date.now() + 60000 * 30)
-                set('user', this.name, date, '/', window.location.hostname)
-                this.$router.push({name: 'fun'})
-            }).catch(msg => {this.tip = msg})
-        },
-        cleartip() {
-            this.tip = ''
-        },
-        ...mapActions(['login'])
-    },
-    watch: {
-        name: 'cleartip',
-        pwd: 'cleartip'
+            ajax.post('/api/login', {name: this.name, pwd: this.pwd}, (res) => {
+                /*const date = new Date(Date.now() + 60000 * 30)
+                set('user', this.name, date, '/', window.location.hostname)*/
+                console.log(res)
+                this.$router.push({name: '/'})
+            })
+            
+        }
     }
 }
 </script>
 <style scoped>
-.logo {
-    height: 150px;
-}
 .loginOut {
-    background-color: #707928;
-}
-.loginOut table {
-    width: 700px;
-    margin: 0 auto;
-}
-.loginLeft {
-    width: 400px;
-    height: 320px;
-    background:url(../../assets/img/dog2.jpg) no-repeat left bottom;
-    background-size: 100%;
-}
-
-.loginInfo input {
-    width: 130px;
-    height: 25px;
-    line-height: 25px;
-    margin-top: 10px;
-    border:1px solid #000;
-    padding: 0 10px;
+    padding: 50px 0;
+    background: url(../../assets/img/login-bg.png);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center bottom;
 }
 
 .loginInfo {
+    height: 300px;
+    margin: auto;
     width: 300px;
-    height: 320px;
-    background-color: #E7D1BC;
+    background-color: #fff;
     text-align: center;
 }
-.loginInfo a.link1 {
-    display: block;
-    background-color: #707928;
-    color: #fff;
-    width: 100px;
-    height: 30px;
-    line-height: 30px;
-    margin: 0 auto;
-}
-.loginInfo a.link2 {
-    display: block;
-    line-height: 20px;
-    text-decoration: underline;
-}
-.tip {
-    height: 25px;
-    line-height: 25px;
-    font-size: 12px;
-    color: red;
+
+.loginInfo .each {
+    margin-bottom: 20px;
 }
 </style>

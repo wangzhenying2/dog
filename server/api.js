@@ -41,29 +41,27 @@ router.post('/api/register', (req, res) => {
     let md5 = crypto.createHash('md5')
     let newPas = md5.update(pwd).digest('hex')
 
-    // 用户名已存在跳转到登录页
-    if (db.user) {
-        db.user.count({
-            name: name
-        }, (err, count) => {
-            if (err) {
-                console.log(err)
-            } else if (count !== 0) {
-                req.session.error = 'User Exist'
-                res.redirect('/login')
-            }
-        })
-    }
-    let user = new models.user({
-        name: name,
-        pwd: newPas
-    }).save((err, newUser) => {
+    // 判断用户名是否存在
+    db.User.count({
+        name: name
+    }, (err, count) => {
         if (err) {
-            res.send(err)
+            res.send({ success: false, msg: err })
+        } else if (count > 0) {
+            res.send({ success: false, msg: '用户名已存在，请重新输入' })
         } else {
-            req.session.regenerate(function () {
-                req.session.user = newUser.name
-                res.redirect('/login')
+            new db.User({
+                name: name,
+                pwd: newPas
+            }).save((err, newUser) => {
+                if (err) {
+                    res.send({ success: false, msg: err })
+                } else {
+                    req.session.regenerate(function () {
+                        req.session.user = newUser.name
+                        res.send({ success: true, msg: '注册成功' })
+                    })
+                }
             })
         }
     })
@@ -72,7 +70,7 @@ router.post('/api/register', (req, res) => {
 // 前台页面-登录
 router.post('/api/login', (req, res) => {
     let { name, pwd } = req.body
-    db.user.findOne({ name }, 'pwd', (err, data) => {
+    db.User.findOne({ name }, 'pwd', (err, data) => {
         switch (true) {
         case !!err:
             console.log(err)
@@ -99,12 +97,12 @@ router.post('/api/getArts', (req, res) => {
     let start = (param.page - 1) * param.pagesize
     async.parallel({
     count: function (done) { // 查询数量
-        db.art.count(param.query).exec(function (err, count) {
+        db.Art.count(param.query).exec(function (err, count) {
             done(err, count)
         })
     },
     records: function (done) { // 查询一页的记录
-        db.art.find(param.query).skip(start).limit(param.pagesize).sort(sort).exec(function (err, doc) {
+        db.Art.find(param.query).skip(start).limit(param.pagesize).sort(sort).exec(function (err, doc) {
             done(err, doc)
         })
     }
@@ -127,7 +125,7 @@ router.post('/api/getArts', (req, res) => {
 router.post('/api/addArts', (req, res) => {
     let id = req.body._id
     if (id) {
-        db.art.findByIdAndUpdate(id, req.body, function (err, data) {
+        db.Art.findByIdAndUpdate(id, req.body, function (err, data) {
             if (err) {
                 res.send({ success: false, msg: err })
             } else {
@@ -135,7 +133,7 @@ router.post('/api/addArts', (req, res) => {
             }
         })
     } else {
-        new db.art(req.body).save((err, data) => {
+        new db.Art(req.body).save((err, data) => {
             if (err) {
                 res.send({ success: false, msg: err })
             } else {
@@ -146,7 +144,7 @@ router.post('/api/addArts', (req, res) => {
 })
 // 文章-del
 router.post('/api/delArts', (req, res) => {
-    db.art.findByIdAndRemove(req.body.id, function (err, data) {
+    db.Art.findByIdAndRemove(req.body.id, function (err, data) {
         if (err) {
             res.send({ success: false, msg: err })
         } else {
@@ -157,7 +155,7 @@ router.post('/api/delArts', (req, res) => {
 // 修改密码
 router.post('/api/savePwd', (req, res) => {
     let { name, pwd } = req.body
-    db.user.findOneAndUpdate({ name }, { pwd }, function (err, data) {
+    db.User.findOneAndUpdate({ name }, { pwd }, function (err, data) {
         if (err) {
             res.send({ success: false, msg: err })
         } else {
@@ -217,7 +215,7 @@ router.post('/api/crawler', (req, res) => {
                 })
 
                 // 数据库插入基本数据（标题，描述，图片原始src）
-                db.art.insertMany(param, (err, data) => {
+                db.Art.insertMany(param, (err, data) => {
                     if (err) {
                         console.log('插入一组数据')
                         console.log(err)
@@ -268,7 +266,7 @@ router.post('/api/crawler', (req, res) => {
                                                 }
                                             })
                                             // 根据_id更新cont详情字段
-                                            db.art.findByIdAndUpdate(value._id, { cont: cont, imgOrigin: '/' + value._id + '/' + imgOriginName }, function (err3, data3) {
+                                            db.Art.findByIdAndUpdate(value._id, { cont: cont, imgOrigin: '/' + value._id + '/' + imgOriginName }, function (err3, data3) {
                                                 if (err3) {
                                                     console.log('根据_id更新cont')
                                                     console.log(err3)
