@@ -2,10 +2,21 @@
     <div>
         <div class="header">
             <img src="" alt="好狗狗">
+            <div>
+                <span v-if="!!!userInfo">
+                    {{userInfo.username}}
+                    <a href="javascript:;" @click="toLogout">退出</a>
+                </span>
+                <span v-if="!!userInfo">
+                    <router-link :to="{ name: 'login' }" >登录</router-link>
+                    <router-link :to="{ name: 'register' }" >注册</router-link>
+                </span>
+            </div>
+            
         </div>
         <div class="nav">
             <div class="navcont">
-                <router-link v-for="nav in navs" :to="{path:`/list/${nav.type}`}"  :key="nav.type">
+                <router-link v-for="nav in navs" :to="{ path: `/list/${nav.type}` }" :key="nav.type">
                     {{nav.text}}
                 </router-link> 
             </div>
@@ -20,10 +31,23 @@ import {
 export default {
     name: 'header',
     data () {
-        return {}
+        return {
+            userInfo: this.$store.state.userInfo,
+            isLogin: !!this.$store.state.userInfo
+        }
     },
     computed: mapState(['navs']),
+    created () {
+        console.log('==========')
+        console.log(this.isLogin)
+       
+    },
     methods: {
+        toLogout () {
+            this.ajax.post('/api/logout', {}, (res) => {
+                this.$store.commit('setUserInfo', '')
+            })
+        },
         navEvent (name) {
             this.$router.push({ name: name })
         },

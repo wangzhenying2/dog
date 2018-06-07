@@ -13,7 +13,7 @@
                     <el-input v-model="pwd" placeholder="请输入密码"></el-input>
                 </div>
                 <div class="each">
-                    <el-button type="warning" @click="doRegister">登录</el-button>
+                    <el-button type="warning" @click="doLogin">登录</el-button>
                 </div>
                 <div class="each">
                     <router-link :to="{name: 'register'}" ><el-button type="text">去注册</el-button></router-link>
@@ -24,8 +24,6 @@
     </div>
 </template>
 <script>
-import {set} from '../../assets/js/cookieUtil'
-import ajax from '../../assets/js/ajax'
 
 export default {
     data () {
@@ -35,7 +33,7 @@ export default {
         }
     },
     methods: {
-        doRegister () {
+        doLogin () {
             // 验证
             if (this.name === '') {
                 this.$message({
@@ -55,13 +53,10 @@ export default {
             }
 
             // 登录
-            ajax.post('/api/login', {name: this.name, pwd: this.pwd}, (res) => {
-                /*const date = new Date(Date.now() + 60000 * 30)
-                set('user', this.name, date, '/', window.location.hostname)*/
-                console.log(res)
-                this.$router.push({name: '/'})
+            this.ajax.post('/api/login', {name: this.name, pwd: this.pwd}, (res) => {
+                this.$store.commit('setUserInfo', res.result)
+                this.$router.push({name: 'index'})
             })
-            
         }
     }
 }
@@ -69,7 +64,7 @@ export default {
 <style scoped>
 .loginOut {
     padding: 50px 0;
-    background: url(../../assets/img/login-bg.png);
+    /* background: url(../../assets/img/login-bg.png); */
     background-size: 100% auto;
     background-repeat: no-repeat;
     background-position: center bottom;

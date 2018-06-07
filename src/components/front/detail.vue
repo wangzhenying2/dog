@@ -5,12 +5,21 @@
             <div class="title" data-value="object_name">{{group.title}}</div>
             <div class="source-info">
                 <span class="date" data-value="object_date" data-filter="date">{{group.createtime}}</span>
-                <span class="ask-count"><i data-value="reply_num">0</i>个评论</span>
-                <span class="support" >
-                    <img src="http://img1.goumin.com/cms/aichong/day_180123/20180123_3b8e2aa.png" class="likeimg33837"><i class="support33837">0</i>
-                </span>
             </div>
             <div class="ask-detail" data-value="object_content" v-html="group.cont"></div>
+            <div class="detail_btm">
+                <div class="ask-count"><strong>0</strong>个评论</div>
+                <a href="javascript:;" class="support" title="点赞" @click="toLike">
+                    <img src="http://img1.goumin.com/cms/aichong/day_180123/20180123_3b8e2aa.png"><strong>{{likeTotal}}</strong>
+                </a>
+            </div>
+            <div class="comment-auther">
+                <h3>添加你的评论</h3>
+                <textarea id="answer_content"></textarea>
+                <div class="comment-btn">
+                    <el-button type="danger" @click="toComment">发表评论</el-button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -23,23 +32,47 @@ import {
 export default {
     data () {
         return {
+            artid: this.$route.params.id,
             crumbtitle: '',
-            isThumbon: false,
+            likeTotal: 0,
             group: {}
         }
     },
     computed: mapState(['articles', 'navs']),
     created () {
-        this.getArts({
-            query: {
-                '_id': this.$route.params.id
-            }
-        }).then(() => {
-// 赋值
-this.group = this.articles[0]
-})
+        this.init()
+        this.getLikes()
     },
     methods: {
+        // 初始化
+        init () {
+            this.getArts({
+                query: { '_id': this.artid }
+            }).then(() => {
+                // 赋值
+                this.group = this.articles[0]
+            })
+        },
+        // 获取点赞数
+        getLikes () {
+            this.ajax.post('/api/getlikes', {artid: this.artid}, (res) => {
+                
+            })
+        },
+        // 评论
+        toComment () {
+            
+        },
+        // 点赞
+        toLike () {
+            this.ajax.post('/api/like', {artid: this.artid}, (res) => {
+                if (!res.islogin) {
+                    this.$router.push({name: 'login'})
+                    return
+                }
+                this.init()
+            })
+        },
         ...mapActions(['getArts'])
     }
 }
@@ -75,5 +108,47 @@ this.group = this.articles[0]
     font-size: 14px;
     text-align: center;
     margin-bottom: 30px;
+}
+.detail_btm {
+    padding: 1em 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 14px;
+}
+.detail_btm .ask-count strong{
+    color: #ff7802;
+    margin: 0 0.2em;
+}
+.detail_btm a {
+    border-radius: 0.5em;
+    border: 1px solid #ddd;
+    padding: 0.5em 1em;
+    display: block;
+    cursor: pointer;
+}
+.detail_btm a:hover {
+    border-color: #ff7802;
+}
+.detail_btm strong, .detail_btm img{
+    vertical-align: middle;
+}
+.detail_btm strong {
+    color: #999;
+    margin: 0 0.2em;
+}
+.comment-auther h3 {
+    color: #ff4949;
+    font-size: 16px;
+    padding: 1em 0;
+}
+.comment-auther textarea {
+    width: 100%;
+    height: 7.5em;
+    line-height: 1.5em;
+}
+.comment-auther .comment-btn {
+    text-align: right;
+    padding: 1em 0; 
 }
 </style>

@@ -25,7 +25,6 @@
 </template>
 <script>
 import {set} from '../../assets/js/cookieUtil'
-import ajax from '../../assets/js/ajax'
 
 export default {
     data () {
@@ -55,13 +54,9 @@ export default {
             }
 
             // 注册
-            ajax.post('/api/register', {name: this.name, pwd: this.pwd}, (res) => {
-                /*const date = new Date(Date.now() + 60000 * 30)
-                set('user', this.name, date, '/', window.location.hostname)*/
-                console.log(res)
+            this.ajax.post('/api/register', {name: this.name, pwd: this.pwd}, (res) => {
                 this.$router.push({name: 'login'})
             })
-            
         }
     }
 }
@@ -69,7 +64,7 @@ export default {
 <style scoped>
 .loginOut {
     padding: 50px 0;
-    background: url(../../assets/img/login-bg.png);
+    /* background: url(../../assets/img/login-bg.png); */
     background-size: 100% auto;
     background-repeat: no-repeat;
     background-position: center bottom;

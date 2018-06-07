@@ -15,11 +15,10 @@ axios.defaults.credentials = true
 Vue.prototype.ajax = axios
 
 const doAction = (type, url, params, callback) => {
-
     // 请求主体
     return axios[type](url, params).then((response) => {
+        let res = response.data
         // 拦截未登录状态
-        let res = response.data.ret || response.data
        /* if (res.code && res.code === '-1999') {
             Message({
                 type: 'warning',
@@ -61,14 +60,14 @@ const doAction = (type, url, params, callback) => {
 }
 
 export default {
-    get(...args) {
+    get (...args) {
         return doAction('get', ...args)
     },
-    post(...args) {
+    post (...args) {
         return doAction('post', ...args)
     },
-    all(...args) {
-        return axios.all([...args]).then(axios.spread(function(...res) {
+    all (...args) {
+        return axios.all([...args]).then(axios.spread(function (...res) {
             return Promise.resolve(res)
         })).catch((error) => {
             return Promise.reject(error)

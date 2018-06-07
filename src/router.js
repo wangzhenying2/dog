@@ -7,6 +7,7 @@ import changepwd from './components/back/changepwd.vue'
 import tool from './components/back/tool.vue'
 /* 前端 */
 import frontviewport from './components/front/viewport.vue'
+import index from './components/front/index.vue'
 import listcomm from './components/front/listcomm.vue'
 import detail from './components/front/detail.vue'
 import login from './components/front/login.vue'
@@ -34,8 +35,10 @@ export default new Router({
         ]
     }, {
         path: '/',
+        redirect: '/index',
         component: frontviewport,
         children: [
+            { path: 'index', name: 'index', component: index },
             { path: 'list/:type', name: 'list', component: listcomm },
             { path: 'detail/:id', name: 'detail', component: detail }
         ]

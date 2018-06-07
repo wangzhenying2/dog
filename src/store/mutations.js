@@ -1,4 +1,9 @@
 export default {
+    // 设置用户信息
+    setUserInfo: (state, data) => {
+        state.userInfo = data
+        sessionStorage.setItem('userInfo', JSON.stringify(data))
+    },
 
     // 文章公用
     SET_ARTS: (state, articles) => {

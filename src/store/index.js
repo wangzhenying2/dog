@@ -6,8 +6,11 @@ import getters from './getters'
 
 Vue.use(Vuex)
 
+let userInfo = sessionStorage.getItem('userInfo')
+
 const store = new Vuex.Store({
     state: {
+        userInfo: (userInfo && JSON.parse(userInfo)) || {},
         navs: [{
             text: '业界资讯',
             type: 'yjzx'

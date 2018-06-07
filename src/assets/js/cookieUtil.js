@@ -4,7 +4,8 @@ function get(name){
         cookieStart = document.cookie.indexOf(cookieName),
         cookieValue = null,
         cookieEnd=null
-
+    
+    
     if (cookieStart > -1) {
         cookieEnd = document.cookie.indexOf(';', cookieStart)
         if (cookieEnd == -1)cookieEnd = document.cookie.length
