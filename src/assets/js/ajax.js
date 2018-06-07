@@ -14,7 +14,7 @@ axios.defaults.credentials = true
 // 全局挂载ajax
 Vue.prototype.ajax = axios
 
-const doAction = (type, url, params, callback) => {
+const doAction = (type, url, params, callback, responseAll) => {
     // 请求主体
     return axios[type](url, params).then((response) => {
         let res = response.data
@@ -31,15 +31,19 @@ const doAction = (type, url, params, callback) => {
 
         // 回调函数里报错会上升到Promise，触发错误catch，所以用try处理
         try {
-            // 自定义处理结果
-            if (res.success) {
+            if (responseAll) {
                 callback(res)
             } else {
-                Message({
-                    type: 'warning',
-                    message: res.msg,
-                    showClose: true
-                })
+                // 自定义处理结果
+                if (res.success) {
+                    callback(res)
+                } else {
+                    Message({
+                        type: 'warning',
+                        message: res.msg,
+                        showClose: true
+                    })
+                }
             }
         } catch (e) {
             Message({

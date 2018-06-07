@@ -3,11 +3,11 @@
         <div class="header">
             <img src="" alt="好狗狗">
             <div>
-                <span v-if="!!!userInfo">
+                <span v-if="isLogin">
                     {{userInfo.username}}
                     <a href="javascript:;" @click="toLogout">退出</a>
                 </span>
-                <span v-if="!!userInfo">
+                <span v-if="!isLogin">
                     <router-link :to="{ name: 'login' }" >登录</router-link>
                     <router-link :to="{ name: 'register' }" >注册</router-link>
                 </span>
@@ -33,18 +33,22 @@ export default {
     data () {
         return {
             userInfo: this.$store.state.userInfo,
-            isLogin: !!this.$store.state.userInfo
+            isLogin: false
         }
     },
     computed: mapState(['navs']),
     created () {
-        console.log('==========')
-        console.log(this.isLogin)
-       
+        this.getUserinfo()
     },
     methods: {
+        getUserinfo () {
+            this.ajax.post('/api/getUserinfo', {userid: this.userInfo.userid}, (res) => {
+                this.isLogin = res.success
+            }, true)
+        },
         toLogout () {
             this.ajax.post('/api/logout', {}, (res) => {
+                this.isLogin = false
                 this.$store.commit('setUserInfo', '')
             })
         },

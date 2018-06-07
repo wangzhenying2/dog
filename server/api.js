@@ -10,6 +10,14 @@ const fn = () => {}
 const async = require('async')
 const crypto = require('crypto')
 
+// 错误处理函数
+function errorEvent (res, err) {
+    if (err) {
+        res.send({ success: false, msg: err })
+        return
+    }
+}
+
 // 判断用户是否登录
 function checkAuth (req, res, next) {
     if (req.session.userid) {
@@ -20,51 +28,80 @@ function checkAuth (req, res, next) {
     }
 }
 
-// 点赞
-router.post('/api/like', checkAuth, (req, res) => {
-    let param = {
-        userid: req.session.userid,
-        artid: req.body.artid
+// 获取用户登录信息
+router.post('/api/getUserinfo', (req, res) => {
+    if (req.session.userid) {
+        res.send({ success: true, msg: '用户已登录！' })
+    } else {
+        res.send({ success: false, msg: '用户未登录！' })
     }
-    db.Like.count(param, (err, count) => {
-        if (err) {
-            res.send({ success: false, msg: err })
-        } else if (count > 0) {
-            res.send({ success: false, msg: '已点赞！' })
-        } else {
-            new db.Like(param).save((err, newUser) => {
-                if (err) {
-                    res.send({ success: false, msg: err })
-                } else {
-                    res.send({ success: true, islogin: true })
-                }
+})
+
+// 获取评论列表
+router.post('/api/getComment', (req, res) => {
+    let param = req.body
+    let sort = param.sort || ''
+    let start = (param.page - 1) * param.pagesize
+    async.parallel({
+        count: function (done) { // 查询数量
+            db.Comment.count(param.query).exec(function (err, count) {
+                done(err, count)
+            })
+        },
+        records: function (done) { // 查询一页的记录
+            db.Comment.find(param.query).skip(start).limit(param.pagesize).sort(sort).exec(function (err, doc) {
+                done(err, doc)
             })
         }
+    }, function (err, results) {
+        errorEvent(res, err)
+
+        let $page = {
+            success: true,
+            page: param.page,
+            pagesize: param.pagesize,
+            total: results.count,
+            result: results.records
+        }
+        res.send($page)
     })
 })
 
-/* 上传 */
+// 写评论
+router.post('/api/addComment', checkAuth, (req, res) => {
+    let param = {
+        cont: req.body.cont,
+        artid: req.body.artid,
+        userid: req.session.userid,
+        username: req.session.username
+    }
+    new db.Comment(param).save((err) => {
+        errorEvent(res, err)
+
+        res.send({ success: true, islogin: true })
+    })
+})
+// 上传
 router.post('/api/uploadimg', function (req, res, next) {
     // 生成multiparty对象，并配置上传目标路径
     var form = new multiparty.Form({ uploadDir: './static/uploads/' })
+
     // 上传完成后处理
     form.parse(req, function (err, fields, files) {
-        var filesTmp = JSON.stringify(files, null, 2)
-        if (err) {
-            res.send({ success: false, msg: err })
-        } else {
-            var inputFile = files.imageFile[0]
-            var filename = inputFile.originalFilename
-            // 重命名为真实文件名
-            fs.rename(inputFile.path, './static/uploads/' + filename, function (err) {
-                if (err) {
-                    console.log('rename error: ' + err)
-                } else {
-                    console.log('rename ok')
-                }
-            })
-            res.send({ success: true, path: '/static/uploads/' + filename, size: inputFile.size, filename: filename })
-        }
+        errorEvent(res, err)
+
+        var inputFile = files.imageFile[0]
+        var filename = inputFile.originalFilename
+
+        // 重命名为真实文件名
+        fs.rename(inputFile.path, './static/uploads/' + filename, function (err) {
+            if (err) {
+                console.log('rename error: ' + err)
+            } else {
+                console.log('rename ok')
+            }
+        })
+        res.send({ success: true, path: '/static/uploads/' + filename, size: inputFile.size, filename: filename })
     })
 })
 
@@ -76,9 +113,9 @@ router.post('/api/register', (req, res) => {
     db.User.count({
         name: name
     }, (err, count) => {
-        if (err) {
-            res.send({ success: false, msg: err })
-        } else if (count > 0) {
+        errorEvent(res, err)
+
+        if (count > 0) {
             res.send({ success: false, msg: '用户名已存在，请重新输入' })
         } else {
             let md5 = crypto.createHash('md5')
@@ -88,15 +125,13 @@ router.post('/api/register', (req, res) => {
                 name: name,
                 pwd: newPas
             }).save((err, newUser) => {
-                if (err) {
-                    res.send({ success: false, msg: err })
-                } else {
-                    req.session.regenerate(function () {
-                        req.session.username = newUser.name
-                        req.session.userid = newUser._id
-                        res.send({ success: true, msg: '注册成功' })
-                    })
-                }
+                errorEvent(res, err)
+
+                req.session.regenerate(function () {
+                    req.session.username = newUser.name
+                    req.session.userid = newUser._id
+                    res.send({ success: true, msg: '注册成功' })
+                })
             })
         }
     })
@@ -108,15 +143,13 @@ router.post('/api/login', (req, res) => {
     let md5 = crypto.createHash('md5')
     let newPwd = md5.update(pwd).digest('hex')
     db.User.findOne({ name }, ['pwd', 'name'], (err, data) => {
-        console.log(data)
-        switch (true) {
-        case !!err:
-            res.send({ success: false, msg: err })
-            break
-        case !data: // 账号不存在
+        errorEvent(res, err)
+
+        if (!data) {
             res.send({ success: false, msg: '账号不存在' })
-            break
-        case data.pwd === newPwd: // 登陆成功
+        } else if (data.pwd !== newPwd) {
+            res.send({ success: false, msg: '密码错误' })
+        } else {
             req.session.regenerate(function () {
                 req.session.username = data.name
                 req.session.userid = data._id
@@ -126,12 +159,6 @@ router.post('/api/login', (req, res) => {
                     result: {username: data.name, userid: data._id}
                 })
             })
-            break
-        case data.pwd !== newPwd: // 密码错误
-            res.send({ success: false, msg: '密码错误' })
-            break
-        default: // 未知错误
-            res.send({ success: false, msg: '未知错误' })
         }
     })
 })
@@ -139,13 +166,8 @@ router.post('/api/login', (req, res) => {
 // 前台页面-登录退出
 router.post('/api/logout', (req, res) => {
     req.session.destroy((err) => {
-        if (err) {
-            res.send({
-                success: false,
-                msg: err
-            })
-            return
-        }
+        errorEvent(res, err)
+
         res.clearCookie('dog')
         res.send({
             success: true,
@@ -158,11 +180,30 @@ router.post('/api/logout', (req, res) => {
 router.post('/api/getlikes', (req, res) => {
     let { artid } = req.body
     db.Like.count({artid: artid}, (err, count) => {
-        if (err) {
-            res.send({ success: false, msg: err })
-            return
+        errorEvent(res, err)
+
+        res.send({ success: true, result: {count: count} })
+    })
+})
+
+// 点赞
+router.post('/api/like', checkAuth, (req, res) => {
+    let param = {
+        userid: req.session.userid,
+        artid: req.body.artid
+    }
+    db.Like.count(param, (err, count) => {
+        errorEvent(res, err)
+
+        if (count > 0) {
+            res.send({ success: false, msg: '已点赞！' })
+        } else {
+            new db.Like(param).save((err, newUser) => {
+                errorEvent(res, err)
+
+                res.send({ success: true, islogin: true })
+            })
         }
-        
     })
 })
 
@@ -183,17 +224,15 @@ router.post('/api/getArts', (req, res) => {
             })
         }
     }, function (err, results) {
-        if (err) {
-            console.log(err)
-        } else {
-            let $page = {
-                page: param.page,
-                pagesize: param.pagesize,
-                total: results.count,
-                result: results.records
-            }
-            res.send(JSON.stringify($page))
+        errorEvent(res, err)
+
+        let $page = {
+            page: param.page,
+            pagesize: param.pagesize,
+            total: results.count,
+            result: results.records
         }
+        res.send($page)
     })
 })
 
@@ -202,41 +241,33 @@ router.post('/api/addArts', (req, res) => {
     let id = req.body._id
     if (id) {
         db.Art.findByIdAndUpdate(id, req.body, function (err, data) {
-            if (err) {
-                res.send({ success: false, msg: err })
-            } else {
-                res.send({ success: true, msg: '修改成功' })
-            }
+            errorEvent(res, err)
+
+            res.send({ success: true, msg: '修改成功' })
         })
     } else {
         new db.Art(req.body).save((err, data) => {
-            if (err) {
-                res.send({ success: false, msg: err })
-            } else {
-                res.send({ success: true, msg: '新增成功' })
-            }
+            errorEvent(res, err)
+
+            res.send({ success: true, msg: '新增成功' })
         })
     }
 })
 // 文章-del
 router.post('/api/delArts', (req, res) => {
     db.Art.findByIdAndRemove(req.body.id, function (err, data) {
-        if (err) {
-            res.send({ success: false, msg: err })
-        } else {
-            res.send({ success: true })
-        }
+        errorEvent(res, err)
+
+        res.send({ success: true })
     })
 })
 // 修改密码
 router.post('/api/savePwd', (req, res) => {
     let { name, pwd } = req.body
     db.User.findOneAndUpdate({ name }, { pwd }, function (err, data) {
-        if (err) {
-            res.send({ success: false, msg: err })
-        } else {
-            res.send({ success: true })
-        }
+        errorEvent(res, err)
+
+        res.send({ success: true })
     })
 })
 // 爬虫抓取工具

@@ -55,7 +55,15 @@ const artSchema = mongoose.Schema({
     }
 })
 const commentSchema = mongoose.Schema({
+    artid: {
+        type: String,
+        default: ''
+    },
     userid: {
+        type: String,
+        default: ''
+    },
+    username: {
         type: String,
         default: ''
     },

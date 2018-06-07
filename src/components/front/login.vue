@@ -55,7 +55,7 @@ export default {
             // 登录
             this.ajax.post('/api/login', {name: this.name, pwd: this.pwd}, (res) => {
                 this.$store.commit('setUserInfo', res.result)
-                this.$router.push({name: 'index'})
+                this.$router.push(this.$route.query.redirect || '/')
             })
         }
     }
