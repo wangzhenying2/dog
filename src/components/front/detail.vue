@@ -138,6 +138,7 @@ export default {
         ...mapActions(['getArts'])
     }
 }
+
 </script>
 <style scoped>
 .main {
