@@ -10,13 +10,13 @@
             <div class="list-m">
                 <div class="pic" v-if="item.imgOrigin"><img :src="`static/art${item.imgOrigin}`"></div>
                 <div class="list-m-r">
-                    <router-link :to="{path:`/detail/${item._id}`}" class="desc">{{ item.desc }}</router-link>
+                    <router-link :to="{path:`/detail/${item._id}`}" class="desc">{{item.desc}}</router-link>
                 </div>
             </div>
             <div class="list-b">
                 <div class="list-b-r">
-                    <a href="/a/2018-01-16/0011516119327.html" class="reply">评论 0</a>
-                    <span class="like" data-id="33801" data-islike="0">点赞 <i class="support33801">1</i></span>
+                    <router-link :to="{path:`/detail/${item._id}`}" class="reply">评论<strong>{{item.commentsum}}</strong></router-link>
+                    <router-link :to="{path:`/detail/${item._id}`}" class="reply">点赞<strong>{{item.likesum}}</strong></router-link>
                 </div>
             </div>
         </div>
@@ -137,7 +137,7 @@ export default {
     color: #888;
 }
 
-.list-group .list-b-r .reply {
+.list-group .list-b-r .reply{
     float: left;
     color: #888;
     border: #ddd solid 1px;
@@ -146,13 +146,8 @@ export default {
     margin-right: 20px;
     cursor: pointer;
 }
-
-.list-group .list-b-r .like {
-    float: left;
-    border: #ddd solid 1px;
-    padding: 8px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+.list-group .list-b-r strong {
+    padding-left: 0.5em;
 }
 
 </style>

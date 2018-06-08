@@ -10,12 +10,12 @@
             <div class="detail_btm">
                 <div class="ask_count"><strong>{{comment.total}}</strong>个评论</div>
                 <a href="javascript:;" class="support" title="点赞" @click="toLike">
-                    <img src="http://img1.goumin.com/cms/aichong/day_180123/20180123_3b8e2aa.png"><strong>{{likeTotal}}</strong>
+                    <img src="http://img1.goumin.com/cms/aichong/day_180123/20180123_3b8e2aa.png"><strong>{{group.likesum}}</strong>
                 </a>
             </div>
             <div class="comment_auther">
                 <h3>添加你的评论</h3>
-                <el-input type="textarea" v-model="commentCont"></el-input>
+                <el-input type="textarea" v-model="commentCont" rows="5"></el-input>
                 <div class="comment_btn">
                     <el-button type="danger" @click="toComment">发表评论</el-button>
                 </div>
@@ -42,7 +42,6 @@ export default {
     data () {
         return {
             artid: this.$route.params.id, // 文章id
-            likeTotal: 0, // 点赞数
             commentCont: '', // 写评论内容
             comment: {
                 comments: [], // 评论记录
@@ -57,8 +56,6 @@ export default {
     created () {
         // 详情
         this.init()
-        // 点赞数
-        this.getLikes()
         // 评论
         this.getComments()
     },
@@ -72,17 +69,12 @@ export default {
                 this.group = this.articles[0]
             })
         },
-        // 获取点赞数
-        getLikes () {
-            this.ajax.post('/api/getlikes', {artid: this.artid}, (res) => {
-                this.likeTotal = res.result.count
-            })
-        },
         // 获取评论
         getComments () {
             let param = {
                 page: this.comment.page,
                 pagesize: this.comment.pagesize,
+                sort: {'_id': -1},
                 query: {
                     artid: this.artid
                 }

@@ -52,6 +52,14 @@ const artSchema = mongoose.Schema({
     cont: {
         type: String,
         default: ''
+    },
+    commentsum: {
+        type: Number,
+        default: 0
+    },
+    likesum: {
+        type: Number,
+        default: 0
     }
 })
 const commentSchema = mongoose.Schema({

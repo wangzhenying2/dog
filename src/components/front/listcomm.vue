@@ -21,7 +21,7 @@ import {
     mapActions,
     mapMutations
 } from 'vuex'
-let sizeData = [20, 40, 60, 80, 100]
+let sizeData = [2, 40, 60, 80, 100]
 
 export default {
     components: {

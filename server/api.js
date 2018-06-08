@@ -37,50 +37,6 @@ router.post('/api/getUserinfo', (req, res) => {
     }
 })
 
-// 获取评论列表
-router.post('/api/getComment', (req, res) => {
-    let param = req.body
-    let sort = param.sort || ''
-    let start = (param.page - 1) * param.pagesize
-    async.parallel({
-        count: function (done) { // 查询数量
-            db.Comment.count(param.query).exec(function (err, count) {
-                done(err, count)
-            })
-        },
-        records: function (done) { // 查询一页的记录
-            db.Comment.find(param.query).skip(start).limit(param.pagesize).sort(sort).exec(function (err, doc) {
-                done(err, doc)
-            })
-        }
-    }, function (err, results) {
-        errorEvent(res, err)
-
-        let $page = {
-            success: true,
-            page: param.page,
-            pagesize: param.pagesize,
-            total: results.count,
-            result: results.records
-        }
-        res.send($page)
-    })
-})
-
-// 写评论
-router.post('/api/addComment', checkAuth, (req, res) => {
-    let param = {
-        cont: req.body.cont,
-        artid: req.body.artid,
-        userid: req.session.userid,
-        username: req.session.username
-    }
-    new db.Comment(param).save((err) => {
-        errorEvent(res, err)
-
-        res.send({ success: true, islogin: true })
-    })
-})
 // 上传
 router.post('/api/uploadimg', function (req, res, next) {
     // 生成multiparty对象，并配置上传目标路径
@@ -176,6 +132,55 @@ router.post('/api/logout', (req, res) => {
     })
 })
 
+// 获取评论列表
+router.post('/api/getComment', (req, res) => {
+    let param = req.body
+    let sort = param.sort || ''
+    console.log(sort)
+    let start = (param.page - 1) * param.pagesize
+    async.parallel({
+        count: function (done) { // 查询数量
+            db.Comment.count(param.query).exec(function (err, count) {
+                done(err, count)
+            })
+        },
+        records: function (done) { // 查询一页的记录
+            db.Comment.find(param.query).skip(start).limit(param.pagesize).sort(sort).exec(function (err, doc) {
+                done(err, doc)
+            })
+        }
+    }, function (err, results) {
+        errorEvent(res, err)
+
+        let $page = {
+            success: true,
+            page: param.page,
+            pagesize: param.pagesize,
+            total: results.count,
+            result: results.records
+        }
+        res.send($page)
+    })
+})
+
+// 写评论
+router.post('/api/addComment', checkAuth, (req, res) => {
+    let param = {
+        cont: req.body.cont,
+        artid: req.body.artid,
+        userid: req.session.userid,
+        username: req.session.username
+    }
+    new db.Comment(param).save((err, newcord) => {
+        errorEvent(res, err)
+
+        db.Art.findByIdAndUpdate({_id: newcord.artid}, { $inc: {commentsum: 1} }, (err, counter) => {
+            errorEvent(res, err)
+            res.send({ success: true, islogin: true })
+        })
+    })
+})
+
 // 获取点赞数
 router.post('/api/getlikes', (req, res) => {
     let { artid } = req.body
@@ -198,10 +203,12 @@ router.post('/api/like', checkAuth, (req, res) => {
         if (count > 0) {
             res.send({ success: false, msg: '已点赞！' })
         } else {
-            new db.Like(param).save((err, newUser) => {
+            new db.Like(param).save((err, newcord) => {
                 errorEvent(res, err)
-
-                res.send({ success: true, islogin: true })
+                db.Art.findByIdAndUpdate({_id: newcord.artid}, { $inc: {likesum: 1} }, (err, counter) => {
+                    errorEvent(res, err)
+                    res.send({ success: true, islogin: true })
+                })
             })
         }
     })
