@@ -74,7 +74,6 @@ export default {
             let param = {
                 page: this.comment.page,
                 pagesize: this.comment.pagesize,
-                sort: {'_id': -1},
                 query: {
                     artid: this.artid
                 }

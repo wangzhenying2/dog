@@ -30,7 +30,8 @@ export default {
         return {
             fileArg: {
                 width: '*',
-                height: '*'
+                height: '*',
+                dir: this.config.id + '/'
             },
             fileList: [],
             frameId: Math.random().toString(16).substring(2) + 'ueditorId',

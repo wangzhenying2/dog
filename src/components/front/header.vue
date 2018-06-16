@@ -16,6 +16,7 @@
         </div>
         <div class="nav">
             <div class="navcont">
+                <router-link :to="{ name: 'index' }" >首页</router-link>
                 <router-link v-for="nav in navs" :to="{ path: `/list/${nav.type}` }" :key="nav.type">
                     {{nav.text}}
                 </router-link> 
@@ -69,11 +70,13 @@ export default {
     width: 800px;
     margin: 0 auto;
 }
-
+.navcont {
+    display: flex;
+    justify-content: space-around;
+}
 .navcont a {
-    display: inline-block;
-    width: 20%;
-    padding: 10px 0;
+    display: block;
+    padding: 10px 20px;
     line-height: 2em;
     font-size: 16px;
     text-align: center;

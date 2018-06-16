@@ -39,25 +39,27 @@ router.post('/api/getUserinfo', (req, res) => {
 
 // 上传
 router.post('/api/uploadimg', function (req, res, next) {
+    console.log(req.body)
+    let {dir, filename} = req.body
+    let staticDir = `/static/${dir || 'uploads/'}`
     // 生成multiparty对象，并配置上传目标路径
-    var form = new multiparty.Form({ uploadDir: './static/uploads/' })
+    var form = new multiparty.Form({ uploadDir: '.' + staticDir })
 
     // 上传完成后处理
     form.parse(req, function (err, fields, files) {
         errorEvent(res, err)
-
         var inputFile = files.imageFile[0]
-        var filename = inputFile.originalFilename
-
-        // 重命名为真实文件名
-        fs.rename(inputFile.path, './static/uploads/' + filename, function (err) {
-            if (err) {
-                console.log('rename error: ' + err)
-            } else {
-                console.log('rename ok')
-            }
-        })
-        res.send({ success: true, path: '/static/uploads/' + filename, size: inputFile.size, filename: filename })
+        if (filename) {
+            // 重命名为指定文件名
+            fs.rename(inputFile.path, '.' + staticDir + filename, function (err) {
+                if (err) {
+                    console.log('重命名失败: ' + err)
+                }
+            })
+        } else {
+            filename = inputFile.path.substring(inputFile.path.lastIndexOf('\\') + 1)
+        }
+        res.send({ success: true, path: staticDir + filename, size: inputFile.size, filename: filename })
     })
 })
 
@@ -135,7 +137,7 @@ router.post('/api/logout', (req, res) => {
 // 获取评论列表
 router.post('/api/getComment', (req, res) => {
     let param = req.body
-    let sort = param.sort || ''
+    let sort = param.sort || {'_id': -1}
     console.log(sort)
     let start = (param.page - 1) * param.pagesize
     async.parallel({
@@ -217,7 +219,7 @@ router.post('/api/like', checkAuth, (req, res) => {
 // 文章-get
 router.post('/api/getArts', (req, res) => {
     let param = req.body
-    let sort = param.sort || ''
+    let sort = param.sort || {'_id': -1}
     let start = (param.page - 1) * param.pagesize
     async.parallel({
         count: function (done) { // 查询数量
@@ -256,7 +258,7 @@ router.post('/api/addArts', (req, res) => {
         new db.Art(req.body).save((err, data) => {
             errorEvent(res, err)
 
-            res.send({ success: true, msg: '新增成功' })
+            res.send({ success: true, msg: '新增成功', result: {id: data._id} })
         })
     }
 })
@@ -276,6 +278,10 @@ router.post('/api/savePwd', (req, res) => {
 
         res.send({ success: true })
     })
+})
+// 获取当前日期
+router.post('/api/getdate', (req, res) => {
+    res.send({ success: true, result: {today: new Date()} })
 })
 // 爬虫抓取工具
 router.post('/api/crawler', (req, res) => {
@@ -312,6 +318,7 @@ router.post('/api/crawler', (req, res) => {
             if (err) {
                 console.log(err)
             } else {
+                console.log('完成抓取列表数据...')
                 let param = []
                 let $ = result.$
                 // 判断是否有数据
@@ -334,6 +341,7 @@ router.post('/api/crawler', (req, res) => {
                         console.log('插入一组数据')
                         console.log(err)
                     } else {
+                        console.log('列表数据成功存入数据库...')
                         let imgArr = []
 
                         // 判断static/art文件夹是否存在，不存在就创建
@@ -363,13 +371,14 @@ router.post('/api/crawler', (req, res) => {
                                             console.log(index)
                                             console.error(err2.stack)
                                         } else {
+                                            console.log('完成抓取详情' + index)
                                             let $ = res2.$
                                             let cont = ''
                                             $('.ask-detail').find('p').each(function (i, elem) {
                                                 let imgsrc = $(this).find('img').attr('src')
                                                 if (imgsrc) {
                                                     let filename = imgsrc.substring(imgsrc.lastIndexOf('/') + 1)
-                                                    cont += '<p class="imgOut"><img src="./static/art/' + value._id + '/' + filename + '" style="width:500px"/></p>'
+                                                    cont += '<p class="imgOut"><img src="/static/art/' + value._id + '/' + filename + '" style="width:500px"/></p>'
                                                     imgArr.push({
                                                         uri: imgsrc,
                                                         filepath: artPath + '/' + value._id,
@@ -406,14 +415,17 @@ router.post('/api/crawler', (req, res) => {
     })
 
     function start () {
+        if (page < 2) {
+            page++
+        } else {
+            return
+        }
+        console.log('开始抓取' + 'http://news.goumin.com/' + type + '/' + (page > 1 ? page + '.html' : ''))
         c.queue({
             uri: 'http://news.goumin.com/' + type + '/' + (page > 1 ? page + '.html' : ''),
             type: type
         })
-        if (page < 2) {
-            page++
-            start()
-        }
+        start()
     }
     // 开始抓取
     start()
