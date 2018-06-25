@@ -1,7 +1,7 @@
 <template>
 <div class="main">
-    <div>
-        {{today}}
+    <div class="index_ads">
+        <a :href="ads[0].url" target="_blank"><img :src="ads[0].src" width="100%"></a>
     </div>
     <el-card class="box-card">
         <div slot="header" class="card_title">
@@ -10,10 +10,10 @@
         </div>
         <div class="card_cont">
             <div v-for="item in hotData" :key="item._id" class="each">
-                <img :src="`static/art${item.imgOrigin}`">
-                <div>
-                    <router-link :to="{path: `/detail/${item._id}`}" >{{ item.title }}</router-link>
-                </div>
+                <router-link :to="{path: `/detail/${item._id}`}" >
+                    <img :src="`static/art${item.imgOrigin}`">
+                    {{ item.title }}
+                </router-link>
             </div>
         </div>
     </el-card>
@@ -29,6 +29,9 @@
             </div>
         </div>
     </el-card>
+    <div class="index_ads">
+        <a :href="ads[1].url" target="_blank"><img :src="ads[1].src" width="100%"></a>
+    </div>
     <el-card class="box-card">
         <div slot="header" class="card_title">
             <span>犬界轶事</span>
@@ -36,11 +39,10 @@
         </div>
         <div class="card_cont">
             <div v-for="item in storyData" :key="item._id" class="each">
-                <img :src="`static/art${item.imgOrigin}`">
-                <div>
-                    <router-link :to="{path: `/detail/${item._id}`}" >{{ item.title }}</router-link>
-                    <div class="time">{{ item.createtime }}</div>
-                </div>
+                <router-link :to="{path: `/detail/${item._id}`}" >
+                    <img :src="`static/art${item.imgOrigin}`">
+                    {{ item.title }}
+                </router-link>
             </div>
         </div>
     </el-card>
@@ -61,7 +63,8 @@ export default {
             hotData: [],
             newsData: [],
             storyData: [],
-            today: ''
+            today: '',
+            ads: []
         }
     },
     created () {
@@ -104,6 +107,11 @@ export default {
         }).then(res => {
             this.storyData = res.result
         })
+
+        // 获取广告位
+        this.ajax.post('/api/ads', {}, (res) => {
+            this.ads = res.result
+        })
     },
     methods: {
 
@@ -115,6 +123,8 @@ export default {
 .main {
     width: 800px;
     margin: 0 auto;
+}
+.index_ads {
 }
 .box-card {
     margin-bottom: 15px;
@@ -139,6 +149,14 @@ export default {
 .card_cont .each{
     width: 23%;
     padding: 1%;
+
+}
+.card_cont .each a{
+    display: block;
+    line-height: 2em;
+    color: #666;
+    height: 190px;
+    overflow: hidden;
 }
 .card_cont .each img{
     width: 100%;
@@ -147,7 +165,6 @@ export default {
 .card_cont1 {
     display: flex;
     flex-flow: column;
-    
 }
 .card_cont1 .each{
     display: flex;

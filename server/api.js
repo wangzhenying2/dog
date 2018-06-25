@@ -39,7 +39,8 @@ router.post('/api/getUserinfo', (req, res) => {
 
 // 上传
 router.post('/api/uploadimg', function (req, res, next) {
-    console.log(req.body)
+    console.log('req.imageFile')
+    console.log(req.imageFile)
     let {dir, filename} = req.body
     let staticDir = `/static/${dir || 'uploads/'}`
     // 生成multiparty对象，并配置上传目标路径
@@ -47,17 +48,21 @@ router.post('/api/uploadimg', function (req, res, next) {
 
     // 上传完成后处理
     form.parse(req, function (err, fields, files) {
+        console.log('files')
+        console.log(files)
         errorEvent(res, err)
-        var inputFile = files.imageFile[0]
+        let inputFile = files.imageFile[0]
+        let filePath = inputFile.path
         if (filename) {
             // 重命名为指定文件名
-            fs.rename(inputFile.path, '.' + staticDir + filename, function (err) {
+            let kzm = filePath.substring(filePath.lastIndexOf('.') + 1)
+            fs.rename(filePath, '.' + staticDir + filename + kzm, function (err) {
                 if (err) {
                     console.log('重命名失败: ' + err)
                 }
             })
         } else {
-            filename = inputFile.path.substring(inputFile.path.lastIndexOf('\\') + 1)
+            filename = filePath.substring(filePath.lastIndexOf('\\') + 1)
         }
         res.send({ success: true, path: staticDir + filename, size: inputFile.size, filename: filename })
     })
@@ -185,11 +190,35 @@ router.post('/api/addComment', checkAuth, (req, res) => {
 
 // 获取点赞数
 router.post('/api/getlikes', (req, res) => {
-    let { artid } = req.body
-    db.Like.count({artid: artid}, (err, count) => {
+    let param = req.body
+    let sort = param.sort || {'_id': -1}
+    let start = (param.page - 1) * param.pagesize
+    async.parallel({
+        count: function (done) { // 查询数量
+            db.Like.count(param.query).exec(function (err, count) {
+                done(err, count)
+            })
+        },
+        records: function (done) { // 查询一页的记录
+            db.Like.find(param.query).populate({
+                path: 'artid',
+                select: '_id title',
+                model: 'art'
+            }).skip(start).limit(param.pagesize).sort(sort).exec(function (err, doc) {
+                done(err, doc)
+            })
+        }
+    }, function (err, results) {
         errorEvent(res, err)
 
-        res.send({ success: true, result: {count: count} })
+        let $page = {
+            success: true,
+            page: param.page,
+            pagesize: param.pagesize,
+            total: results.count,
+            result: results.records
+        }
+        res.send($page)
     })
 })
 
@@ -236,6 +265,7 @@ router.post('/api/getArts', (req, res) => {
         errorEvent(res, err)
 
         let $page = {
+            success: true,
             page: param.page,
             pagesize: param.pagesize,
             total: results.count,
@@ -282,6 +312,37 @@ router.post('/api/savePwd', (req, res) => {
 // 获取当前日期
 router.post('/api/getdate', (req, res) => {
     res.send({ success: true, result: {today: new Date()} })
+})
+
+/*
+ * 广告位获取
+ *
+ *现在mongodb中执行以下命令生成固定记录
+
+var feeds = [
+{name:"广告位1", src:"", url:"", remark:""},
+{name:"广告位2", src:"", url:"", remark:""},
+]
+db.ads.insert(feeds)
+
+ */
+router.post('/api/ads', (req, res) => {
+    db.Ad.find({}, (err, data) => {
+        errorEvent(res, err)
+
+        res.send({ success: true, result: data })
+    })
+})
+// 广告位修改
+router.post('/api/ads/modify', (req, res) => {
+    let id = req.body._id
+    console.log('req.body')
+    console.log(req.body)
+    db.Ad.findByIdAndUpdate(id, req.body, function (err, data) {
+        errorEvent(res, err)
+
+        res.send({ success: true, msg: '修改成功' })
+    })
 })
 // 爬虫抓取工具
 router.post('/api/crawler', (req, res) => {
@@ -415,16 +476,16 @@ router.post('/api/crawler', (req, res) => {
     })
 
     function start () {
-        if (page < 2) {
-            page++
-        } else {
-            return
-        }
         console.log('开始抓取' + 'http://news.goumin.com/' + type + '/' + (page > 1 ? page + '.html' : ''))
         c.queue({
             uri: 'http://news.goumin.com/' + type + '/' + (page > 1 ? page + '.html' : ''),
             type: type
         })
+        if (page < 1) {
+            page++
+        } else {
+            return
+        }
         start()
     }
     // 开始抓取

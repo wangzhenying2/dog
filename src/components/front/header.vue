@@ -4,7 +4,7 @@
             <img src="" alt="好狗狗">
             <div>
                 <span v-if="isLogin">
-                    {{userInfo.username}}
+                    <router-link :to="{ name: 'like' }" >{{userInfo.username}}</router-link>
                     <a href="javascript:;" @click="toLogout">退出</a>
                 </span>
                 <span v-if="!isLogin">

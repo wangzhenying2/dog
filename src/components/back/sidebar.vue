@@ -2,6 +2,10 @@
     <aside class="sidebar">
         <menu class="nav">
             <ul>
+                <router-link :to="{name:'ads'}" tag="li">
+                    <i class="fa fa-user fa-fw"></i>
+                    <span>广告位管理</span>
+                </router-link>
                 <router-link :to="{name:'art', query: {type: 'yjzx'}}" tag="li">
                     <i class="fa fa-list-ul fa-fw"></i>
                     <span>业界资讯</span>
@@ -21,10 +25,6 @@
                 <router-link :to="{name:'art', query: {type: 'yhxl'}}" tag="li">
                     <i class="fa fa-list-ul fa-fw"></i>
                     <span>养护训练</span>
-                </router-link>
-                <router-link :to="{name:'changepwd'}" tag="li">
-                    <i class="fa fa-user fa-fw"></i>
-                    <span>修改密码</span>
                 </router-link>
                 <router-link :to="{name:'tool'}" tag="li">
                     <i class="fa fa-user fa-fw"></i>

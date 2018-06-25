@@ -98,12 +98,35 @@ const likeSchema = mongoose.Schema({
         default: Date.now
     }
 })
+const adSchema = mongoose.Schema({
+    name: {
+        type: String,
+        default: ''
+    },
+    src: {
+        type: String,
+        default: ''
+    },
+    url: {
+        type: String,
+        default: ''
+    },
+    remark: {
+        type: String,
+        default: ''
+    },
+    modifytime: {
+        type: Date,
+        default: Date.now
+    }
+})
 /* ************* 定义模型Model ************* */
 const Models = {
     User: mongoose.model('user', userSchema),
     Art: mongoose.model('art', artSchema),
     Comment: mongoose.model('comment', commentSchema),
-    Like: mongoose.model('like', likeSchema)
+    Like: mongoose.model('like', likeSchema),
+    Ad: mongoose.model('ad', adSchema)
 }
 
 module.exports = Models

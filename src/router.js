@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import viewport from './components/back/viewport.vue'
 import article from './components/back/article.vue'
 import tool from './components/back/tool.vue'
+import ads from './components/back/ads.vue'
 /* 前端 */
 import frontviewport from './components/front/viewport.vue'
 import index from './components/front/index.vue'
@@ -32,6 +33,7 @@ export default new Router({
         redirect: '/back/art',
         component: viewport,
         children: [
+            { path: 'ads', name: 'ads', component: ads },
             { path: 'art', name: 'art', component: article },
             { path: 'tool', name: 'tool', component: tool }
         ]
