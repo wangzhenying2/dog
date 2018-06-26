@@ -2,7 +2,7 @@
     <div>
         <el-card class="box-card">
             <div slot="header" class="clearfix">
-                <span>》我的点赞</span>
+                <span>》我的评论</span>
             </div>
             <div v-for="item in listData" :key="item._id" >
                 <router-link :to="{path:`/detail/${item.artid._id}`}">{{item.artid.title}}</router-link>
@@ -41,6 +41,7 @@ export default {
         },
         toPage () {
             // 判断登录，未登录跳转到登录页面
+            console.log(this.userid)
             if (!this.userid) {
                 this.$router.push({name: 'login'})
             }
@@ -51,7 +52,7 @@ export default {
                 page: this.page,
                 pagesize: this.pagesize
             }
-            this.ajax.post('/api/getlikes', param, (res) => {
+            this.ajax.post('/api/getComment', param, (res) => {
                 this.total = res.total
                 this.listData = res.result
             })

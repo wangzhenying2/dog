@@ -31,7 +31,7 @@ function checkAuth (req, res, next) {
 // 获取用户登录信息
 router.post('/api/getUserinfo', (req, res) => {
     if (req.session.userid) {
-        res.send({ success: true, msg: '用户已登录！' })
+        res.send({ success: true, msg: {userid: req.session.userid, username: req.session.username} })
     } else {
         res.send({ success: false, msg: '用户未登录！' })
     }
@@ -143,7 +143,6 @@ router.post('/api/logout', (req, res) => {
 router.post('/api/getComment', (req, res) => {
     let param = req.body
     let sort = param.sort || {'_id': -1}
-    console.log(sort)
     let start = (param.page - 1) * param.pagesize
     async.parallel({
         count: function (done) { // 查询数量
@@ -152,7 +151,11 @@ router.post('/api/getComment', (req, res) => {
             })
         },
         records: function (done) { // 查询一页的记录
-            db.Comment.find(param.query).skip(start).limit(param.pagesize).sort(sort).exec(function (err, doc) {
+            db.Comment.find(param.query).populate({
+                path: 'artid',
+                select: '_id title',
+                model: 'art'
+            }).skip(start).limit(param.pagesize).sort(sort).exec(function (err, doc) {
                 done(err, doc)
             })
         }
@@ -188,7 +191,7 @@ router.post('/api/addComment', checkAuth, (req, res) => {
     })
 })
 
-// 获取点赞数
+// 获取点赞数据
 router.post('/api/getlikes', (req, res) => {
     let param = req.body
     let sort = param.sort || {'_id': -1}
@@ -302,8 +305,8 @@ router.post('/api/delArts', (req, res) => {
 })
 // 修改密码
 router.post('/api/savePwd', (req, res) => {
-    let { name, pwd } = req.body
-    db.User.findOneAndUpdate({ name }, { pwd }, function (err, data) {
+    let { userid, pwd } = req.body
+    db.User.findOneAndUpdate(userid, pwd, (err, data) => {
         errorEvent(res, err)
 
         res.send({ success: true })

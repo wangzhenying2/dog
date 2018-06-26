@@ -37,19 +37,6 @@ export default {
         })
     },
 
-    // 密码-修改
-    savePwd ({ state, commit }, pwd) {
-        if (state.user.name === '') {
-            return {
-                data: {
-                    success: false,
-                    msg: '请退出重新登录！'
-                }
-            }
-        }
-        return Vue.http.post('/api/savePwd', { name: state.user.name, pwd })
-    },
-
     // 登录-提交
     login ({ commit }, payload) {
         return Vue.http.post('/api/login', payload)
@@ -61,7 +48,7 @@ export default {
             }
         })
     },
-    
+ 
     // 爬虫工具-抓取数据
     crawler ({ state, commit }, param) {
         return Vue.http.post('/api/crawler', param)

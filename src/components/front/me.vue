@@ -9,19 +9,11 @@
                       class="el-menu-vertical-demo"
                       background-color="#545c64"
                       text-color="#fff"
+                      :router="true"
                       active-text-color="#ffd04b">
-                      <el-menu-item index="1">
-                        <i class="el-icon-menu"></i>
-                        <span slot="title">评论的文章</span>
-                      </el-menu-item>
-                      <el-menu-item index="2">
-                        <i class="el-icon-menu"></i>
-                        <span slot="title">点赞的文章</span>
-                      </el-menu-item>
-                      <el-menu-item index="3">
-                        <i class="el-icon-menu"></i>
-                        <span slot="title">修改密码</span>
-                      </el-menu-item>
+                      <el-menu-item index="comment"><i class="el-icon-document"></i>评论的文章</el-menu-item>
+                      <el-menu-item index="like"><i class="el-icon-document"></i>点赞的文章</el-menu-item>
+                      <el-menu-item index="changepwd"><i class="el-icon-edit"></i>修改密码</el-menu-item>
                     </el-menu>
                 </div>
                 <div class="me_r">

@@ -14,8 +14,8 @@ import login from './components/front/login.vue'
 import register from './components/front/register.vue'
 import me from './components/front/me.vue'
 import like from './components/front/like.vue'
-/*import changepwd from './components/front/changepwd.vue'
-import comment from './components/front/comment.vue'*/
+import changepwd from './components/front/changepwd.vue'
+import comment from './components/front/comment.vue'
 
 Vue.use(Router)
 
@@ -51,9 +51,9 @@ export default new Router({
         redirect: '/me/like',
         component: me,
         children: [
-            { path: 'like', name: 'like', component: like }
-            /*{ path: 'comment', name: 'comment', component: comment },
-            { path: 'changepwd', name: 'changepwd', component: changepwd }*/
+            { path: 'like', name: 'like', component: like },
+            { path: 'comment', name: 'comment', component: comment },
+            { path: 'changepwd', name: 'changepwd', component: changepwd }
         ]
     }]
 })
