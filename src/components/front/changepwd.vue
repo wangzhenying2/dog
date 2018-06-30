@@ -6,10 +6,10 @@
             </div>
             <el-form label-width="100px">
                 <el-form-item label="新密码">
-                    <el-input type="password" v-model="pwd" auto-complete="off" placeholder="输入新密码"></el-input>
+                    <el-input type="password" v-model="pwd" auto-complete="off" placeholder="输入新密码" style="width:300px"></el-input>
                 </el-form-item>
                 <el-form-item label="确认密码">
-                    <el-input type="password" v-model="repwd" auto-complete="off" placeholder="再输入一次"></el-input>
+                    <el-input type="password" v-model="repwd" auto-complete="off" placeholder="再输入一次" style="width:300px"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="saveSubmit">提交</el-button>
@@ -51,7 +51,7 @@ export default {
                 userid: this.userid,
                 pwd: this.pwd
             }
-            this.post('/api/savePwd', param, (res) => {
+            this.ajax.post('/api/savePwd', param, (res) => {
                 this.$message.success('密码修改成功！')
             })
         }

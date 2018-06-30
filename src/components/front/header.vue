@@ -3,23 +3,22 @@
         <div class="header">
             <img src="" alt="好狗狗">
             <div>
-                <span v-if="userInfo !== ''">
-                    <router-link :to="{ name: 'like' }" >{{userInfo.username}}</router-link>
+                <span v-if="this.$store.state.userInfo !== ''">
+                    <router-link :to="{ name: 'like' }" >{{this.$store.state.userInfo.username}}</router-link>
                     <a href="javascript:;" @click="toLogout">退出</a>
                 </span>
-                <span v-if="userInfo === ''">
+                <span v-if="this.$store.state.userInfo === ''">
                     <router-link :to="{ name: 'login' }" >登录</router-link>
                     <router-link :to="{ name: 'register' }" >注册</router-link>
                 </span>
             </div>
-            
         </div>
         <div class="nav">
             <div class="navcont">
                 <router-link :to="{ name: 'index' }" >首页</router-link>
                 <router-link v-for="nav in navs" :to="{ path: `/list/${nav.type}` }" :key="nav.type">
                     {{nav.text}}
-                </router-link> 
+                </router-link>
             </div>
         </div>
     </div>
@@ -33,7 +32,6 @@ export default {
     name: 'header',
     data () {
         return {
-            userInfo: this.$store.state.userInfo
         }
     },
     computed: mapState(['navs']),
@@ -42,13 +40,13 @@ export default {
     },
     methods: {
         getUserinfo () {
-            this.ajax.post('/api/getUserinfo', {userid: this.userInfo.userid}, (res) => {
+            this.ajax.post('/api/getUserinfo', {userid: this.$store.state.userInfo.userid}, (res) => {
                 if (res.success) {
                     this.$store.commit('setUserInfo', res.msg)
                 } else {
                     this.$store.commit('setUserInfo', '')
                 }
-            })
+            }, true)
         },
         toLogout () {
             this.ajax.post('/api/logout', {}, (res) => {

@@ -5,7 +5,6 @@
 
 import Vue from 'vue'
 import axios from 'axios'
-import qs from 'qs'
 import { Message } from 'element-ui'
 
 // 跨域允许传cookie
@@ -19,7 +18,7 @@ const doAction = (type, url, params, callback, responseAll) => {
     return axios[type](url, params).then((response) => {
         let res = response.data
         // 拦截未登录状态
-       /* if (res.code && res.code === '-1999') {
+        /* if (res.code && res.code === '-1999') {
             Message({
                 type: 'warning',
                 message: res.resultDes || '请先登录！',

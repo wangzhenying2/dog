@@ -9,9 +9,7 @@
 </template>
 <script>
 import {
-    mapState,
-    mapActions,
-    mapMutations
+    mapActions
 } from 'vuex'
 
 const typeJson = [

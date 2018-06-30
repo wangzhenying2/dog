@@ -48,8 +48,6 @@ router.post('/api/uploadimg', function (req, res, next) {
 
     // 上传完成后处理
     form.parse(req, function (err, fields, files) {
-        console.log('files')
-        console.log(files)
         errorEvent(res, err)
         let inputFile = files.imageFile[0]
         let filePath = inputFile.path
@@ -65,6 +63,19 @@ router.post('/api/uploadimg', function (req, res, next) {
             filename = filePath.substring(filePath.lastIndexOf('\\') + 1)
         }
         res.send({ success: true, path: staticDir + filename, size: inputFile.size, filename: filename })
+    })
+})
+
+// 修改密码
+router.post('/api/savePwd', (req, res) => {
+    let { userid, pwd } = req.body
+    let md5 = crypto.createHash('md5')
+    let newPas = md5.update(pwd).digest('hex')
+    console.log(newPas)
+    db.User.findByIdAndUpdate({_id: userid}, {pwd: newPas}, (err, data) => {
+        errorEvent(res, err)
+
+        res.send({ success: true })
     })
 })
 
@@ -303,15 +314,7 @@ router.post('/api/delArts', (req, res) => {
         res.send({ success: true })
     })
 })
-// 修改密码
-router.post('/api/savePwd', (req, res) => {
-    let { userid, pwd } = req.body
-    db.User.findOneAndUpdate(userid, pwd, (err, data) => {
-        errorEvent(res, err)
 
-        res.send({ success: true })
-    })
-})
 // 获取当前日期
 router.post('/api/getdate', (req, res) => {
     res.send({ success: true, result: {today: new Date()} })
@@ -345,6 +348,14 @@ router.post('/api/ads/modify', (req, res) => {
         errorEvent(res, err)
 
         res.send({ success: true, msg: '修改成功' })
+    })
+})
+// 广告位-del
+router.post('/api/ads/del', (req, res) => {
+    db.Ad.findByIdAndUpdate(req.body.id, {src: '', url: '', remark: ''}, function (err, data) {
+        errorEvent(res, err)
+
+        res.send({ success: true })
     })
 })
 // 爬虫抓取工具
@@ -474,6 +485,7 @@ router.post('/api/crawler', (req, res) => {
                     }
                 })
             }
+            console.log('抓取完成')
             done()
         }
     })

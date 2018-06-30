@@ -1,21 +1,24 @@
 <template>
     <div>
-        <el-table :data="ads" border :fit="true" style="width:100%">
-            <el-table-column prop="_id" label="id" header-align="center"></el-table-column>
-            <el-table-column prop="name" label="名称" header-align="center"></el-table-column>
-            <el-table-column prop="src" label="图片" header-align="center">
-                <template scope="scope">
-                    <img :src="scope.row.src" width="150px">
-                </template>
-            </el-table-column>
-            <el-table-column prop="url" label="外链地址" width="180px"></el-table-column>
-            <el-table-column prop="remark" label="备注" width="180px"></el-table-column>
-            <el-table-column label="操作" align="center" width="150px">
-                <template scope="scope">
-                    <el-button type="success" size="small" @click="edit(scope.row)">编辑</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
+        <div class="p10">
+            <el-table :data="ads" border :fit="true" style="width:100%">
+                <el-table-column prop="_id" label="id" header-align="center"></el-table-column>
+                <el-table-column prop="name" label="名称" header-align="center"></el-table-column>
+                <el-table-column prop="src" label="图片" header-align="center">
+                    <template scope="scope">
+                        <img :src="scope.row.src" width="150px">
+                    </template>
+                </el-table-column>
+                <el-table-column prop="url" label="外链地址" width="180px"></el-table-column>
+                <el-table-column prop="remark" label="备注" width="180px"></el-table-column>
+                <el-table-column label="操作" align="center" width="150px">
+                    <template scope="scope">
+                        <el-button type="success" size="small" @click="edit(scope.row)">编辑</el-button>
+                        <el-button type="info" size="small" @click="del(scope.row._id)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
         <el-dialog title="编辑" :visible="visibleDialog" :show-close="false">
             <el-form :model="form" label-width="150px">
                 <el-form-item label="名称">
@@ -34,7 +37,6 @@
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过2M</div>
                     </el-upload>
-                    
                 </el-form-item>
                 <el-form-item label="外链地址">
                     <el-input v-model="form.url" :autosize="true" ></el-input>
@@ -105,6 +107,14 @@ export default {
                 this.visibleDialog = false
                 this.init()
             })
+        },
+        // 删除
+        del (id) {
+            if (confirm('确认删除吗?')) {
+                this.ajax.post('/api/ads/del', {id: id}, (res) => {
+                    this.init()
+                })
+            }
         },
         handleAvatarSuccess (res, file) {
             if (res.success) {

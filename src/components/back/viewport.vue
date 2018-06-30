@@ -1,14 +1,10 @@
 <template>
     <div>
         <dog-header></dog-header>
-        <el-row>
-            <el-col :span="4">
-                <dog-side></dog-side>
-            </el-col>
-            <el-col :span="20">
-                <router-view></router-view>
-            </el-col>
-        </el-row>
+        <dog-side></dog-side>
+        <div class="main_out">
+            <router-view></router-view>
+        </div>
     </div>
 </template>
 <script>
@@ -21,5 +17,8 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
+.main_out {
+    margin: 50px 0 0 200px;
+}
 </style>

@@ -2,10 +2,12 @@
     <div>
         <el-card class="box-card">
             <div slot="header" class="clearfix">
-                <span>》我的点赞</span>
+                <span class="me_title">我的点赞</span>
             </div>
-            <div v-for="item in listData" :key="item._id" >
-                <router-link :to="{path:`/detail/${item.artid._id}`}">{{item.artid.title}}</router-link>
+            <div class="me_list">
+                <div v-for="item in listData" :key="item._id" >
+                    > <router-link :to="{path:`/detail/${item.artid._id}`}">{{item.artid.title}}</router-link>
+                </div>
             </div>
             <div class="pageOut">
                 <el-pagination
@@ -28,7 +30,7 @@ export default {
             listData: [],
             page: 1,
             total: 0,
-            pagesize: 20
+            pagesize: 10
         }
     },
     created () {
@@ -67,5 +69,18 @@ export default {
 .pageOut {
     text-align: center;
     padding: 20px 0 50px;
+}
+.me_title {
+    font-size: 16px;
+}
+.me_list {
+    font-size: 13px;
+    line-height: 2em;
+}
+.me_list a{
+    color: #666;
+}
+.me_list a:hover{
+    color: #ff7546;
 }
 </style>

@@ -202,7 +202,7 @@ export default {
 }
 .comment_auther .comment_btn {
     text-align: right;
-    padding: 1em 0; 
+    padding: 1em 0;
 }
 .comment_title {
     color: #555;

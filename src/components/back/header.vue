@@ -1,15 +1,10 @@
 <template>
-    <el-row type="flex" class="row-bg" justify="space-between" align="middle">
-        <el-col :span="12">
-            <h1 class="logo"></h1>
-        </el-col>
-        <el-col :span="12">
-            <div class="header_btn">
-                欢迎您<strong>{{ name }}</strong>
-                <el-button type="text" @click="onLogout()">退出</el-button>
-            </div>
-        </el-col>
-    </el-row>
+    <div class="header_out">
+        <h1 class="logo"></h1>
+        <div class="header_btn">
+            欢迎您<strong>{{ name }}</strong> <el-button type="info" @click="onLogout()">退出</el-button>
+        </div>
+    </div>
 </template>
 <script>
 import {unset, get} from '../../assets/js/cookieUtil'
@@ -34,10 +29,18 @@ export default {
 </script>
 <style>
 .logo {}
-
+.header_out {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    z-index: 1000;
+    background-color: #434A50;
+}
 .header_btn {
     text-align: right;
-    font-size: 16px;
+    font-size: 14px;
     padding-right: 20px;
+    color: #fff;
 }
 </style>

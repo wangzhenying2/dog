@@ -1,46 +1,30 @@
 <template>
-    <aside class="sidebar">
-        <menu class="nav">
-            <ul>
-                <router-link :to="{name:'ads'}" tag="li">
-                    <i class="fa fa-user fa-fw"></i>
-                    <span>广告位管理</span>
-                </router-link>
-                <router-link :to="{name:'art', query: {type: 'yjzx'}}" tag="li">
-                    <i class="fa fa-list-ul fa-fw"></i>
-                    <span>业界资讯</span>
-                </router-link>
-                <router-link :to="{name:'art', query: {type: 'cpss'}}" tag="li">
-                    <i class="fa fa-list-ul fa-fw"></i>
-                    <span>产品时尚</span>
-                </router-link>
-                <router-link :to="{name:'art', query: {type: 'qjys'}}" tag="li">
-                    <i class="fa fa-list-ul fa-fw"></i>
-                    <span>犬界轶事</span>
-                </router-link>
-                <router-link :to="{name:'art', query: {type: 'cjft'}}" tag="li">
-                    <i class="fa fa-list-ul fa-fw"></i>
-                    <span>超级访谈</span>
-                </router-link>
-                <router-link :to="{name:'art', query: {type: 'yhxl'}}" tag="li">
-                    <i class="fa fa-list-ul fa-fw"></i>
-                    <span>养护训练</span>
-                </router-link>
-                <router-link :to="{name:'tool'}" tag="li">
-                    <i class="fa fa-user fa-fw"></i>
-                    <span>简便工具</span>
-                </router-link>
-            </ul>
-        </menu>
-    </aside>
+    <div class="sidebar">
+        <el-menu
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+          :router="true">
+            <el-menu-item :index="{name:'ads'}">广告位管理</el-menu-item>
+            <el-menu-item :index="{name:'art', query: {type: 'yjzx'}}">业界资讯</el-menu-item>
+            <el-menu-item :index="{name:'art', query: {type: 'cpss'}}">产品时尚</el-menu-item>
+            <el-menu-item :index="{name:'art', query: {type: 'qjys'}}">犬界轶事</el-menu-item>
+            <el-menu-item :index="{name:'art', query: {type: 'cjft'}}">超级访谈</el-menu-item>
+            <el-menu-item :index="{name:'art', query: {type: 'yhxl'}}">养护训练</el-menu-item>
+            <el-menu-item :index="{name:'tool'}">简便工具</el-menu-item>
+        </el-menu>
+    </div>
 </template>
 <script>
 export default {
 
 }
 </script>
-<style>
-.sidebar li{
-    cursor: pointer;
+<style scoped>
+.sidebar {
+    position: fixed;
+    top: 50px;
+    width: 200px;
+    z-index: 1000;
 }
 </style>

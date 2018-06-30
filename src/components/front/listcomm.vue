@@ -18,8 +18,7 @@
 import dogList from './listModel.vue'
 import {
     mapState,
-    mapActions,
-    mapMutations
+    mapActions
 } from 'vuex'
 let sizeData = [20, 40, 60, 80, 100]
 

@@ -1,8 +1,6 @@
 <template>
 <div class="main">
-    <div class="index_ads">
-        <a :href="ads[0].url" target="_blank"><img :src="ads[0].src" width="100%"></a>
-    </div>
+    <div class="index_ads" v-if="ads[0].url"><a :href="ads[0].url" target="_blank"><img :src="ads[0].src" width="100%"></a></div>
     <el-card class="box-card">
         <div slot="header" class="card_title">
             <span>热点时尚</span>
@@ -29,9 +27,7 @@
             </div>
         </div>
     </el-card>
-    <div class="index_ads">
-        <a :href="ads[1].url" target="_blank"><img :src="ads[1].src" width="100%"></a>
-    </div>
+    <div class="index_ads" v-if="ads[1].url"><a :href="ads[1].url" target="_blank"><img :src="ads[1].src" width="100%"></a></div>
     <el-card class="box-card">
         <div slot="header" class="card_title">
             <span>犬界轶事</span>
@@ -49,12 +45,9 @@
 </div>
 </template>
 <script>
-import Vue from 'vue'
 import moment from 'moment'
 import {
-    mapState,
-    mapActions,
-    mapMutations
+    mapActions
 } from 'vuex'
 
 export default {
@@ -127,7 +120,7 @@ export default {
 .index_ads {
 }
 .box-card {
-    margin-bottom: 15px;
+    margin-top: 20px;
 }
 .card_title {
     display: flex;
@@ -183,6 +176,5 @@ export default {
     color: #ff7546;
 }
 .card_cont1 .time{
-    
 }
 </style>

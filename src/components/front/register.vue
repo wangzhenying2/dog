@@ -24,7 +24,6 @@
     </div>
 </template>
 <script>
-import {set} from '../../assets/js/cookieUtil'
 
 export default {
     data () {

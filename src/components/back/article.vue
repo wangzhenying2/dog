@@ -1,36 +1,38 @@
 <template>
     <div class="fun">
-        <div class="pb10">
-            <el-button type="info" @click="addFun()">新增</el-button>
+        <div class="p10">
+            <el-button type="success" @click="addFun()" size="small">新增</el-button>
         </div>
-        <el-table :data="articles" border :fit="true" style="width:100%">
-            <el-table-column prop="_id" label="ID" width="230px" header-align="center"></el-table-column>
-            <el-table-column prop="title" label="标题" width="200px" header-align="center"></el-table-column>
-            <el-table-column prop="createtime" label="创建日期" width="180px" align="center"></el-table-column>
-            <el-table-column prop="desc" label="描述" header-align="center"></el-table-column>
-            <el-table-column label="操作" align="center" width="150px">
-                <template scope="scope">
-                    <el-button type="success" size="small" @click="addFun(scope.row)">编辑</el-button>
-                    <el-button type="danger" size="small" @click="delFun(scope.row._id)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <div class="pageOut">
-            <el-pagination
-            @current-change="handleCurrentChange"
-            :current-page="page"
-            :page-size="pagesize"
-            layout="total, prev, pager, next, jumper"
-            :total="total">
-            </el-pagination>
+        <div class="p10">
+            <el-table :data="articles" border :fit="true" style="width:100%">
+                <el-table-column prop="_id" label="ID" width="230px" header-align="center"></el-table-column>
+                <el-table-column prop="title" label="标题" width="200px" header-align="center"></el-table-column>
+                <el-table-column prop="createtime" label="创建日期" width="180px" align="center"></el-table-column>
+                <el-table-column prop="desc" label="描述" header-align="center"></el-table-column>
+                <el-table-column label="操作" align="center" width="150px">
+                    <template scope="scope">
+                        <el-button type="success" size="small" @click="addFun(scope.row)">编辑</el-button>
+                        <el-button type="info" size="small" @click="delFun(scope.row._id)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pageOut">
+                <el-pagination
+                @current-change="handleCurrentChange"
+                :current-page="page"
+                :page-size="pagesize"
+                layout="total, prev, pager, next, jumper"
+                :total="total">
+                </el-pagination>
+            </div>
         </div>
-        <el-dialog title="新增" :visible="visibleDialog" :before-close="closeDialog" size="large">
+        <el-dialog title="新增" :visible="visibleDialog" :before-close="closeDialog" width="1000px">
             <el-form :model="form" label-width="150px">
                 <el-form-item label="标题">
-                    <el-input type="textarea" v-model="form.title" :autosize="true" style="width:50%"></el-input>
+                    <el-input type="textarea" v-model="form.title" :autosize="true" style="width:80%"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
-                    <el-input type="textarea" v-model="form.desc" :autosize="true" style="width:50%"></el-input>
+                    <el-input type="textarea" v-model="form.desc" :autosize="true" style="width:80%"></el-input>
                 </el-form-item>
                 <div v-show="ueditorShow">
                     <aym-ueditor :config="config" :value="form.cont" v-on:change="getContent"></aym-ueditor>
@@ -47,8 +49,7 @@
 <script>
 import {
     mapState,
-    mapActions,
-    mapMutations
+    mapActions
 } from 'vuex'
 import ueditor from '../editor/ueditor.vue'
 export default {
@@ -121,12 +122,11 @@ export default {
                 type: this.type
             }
             this.addArtsComm(param)
-            .then((res) => {
-                this.form.id = res.result.id
-                this.config.id = this.form.id
-                this.ueditorShow = true
-            })
-
+                .then((res) => {
+                    this.form.id = res.result.id
+                    this.config.id = this.form.id
+                    this.ueditorShow = true
+                })
         },
         // 分页
         handleCurrentChange (val) {
@@ -189,14 +189,14 @@ export default {
                 param._id = this.form.id
             }
             this.addArtsComm(param)
-            .then((res) => {
-                this.$message({
-                    type: 'success',
-                    message: res.msg
+                .then((res) => {
+                    this.$message({
+                        type: 'success',
+                        message: res.msg
+                    })
+                    this.visibleDialog = false
+                    this.getArts({ type: this.type })
                 })
-                this.visibleDialog = false
-                this.getArts({ type: this.type })
-            })
         },
         // 删除
         delFun (id) {
