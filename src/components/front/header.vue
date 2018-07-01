@@ -16,7 +16,7 @@
         <div class="nav">
             <div class="navcont">
                 <router-link :to="{ name: 'index' }" >首页</router-link>
-                <router-link v-for="nav in navs" :to="{ path: `/list/${nav.type}` }" :key="nav.type">
+                <router-link v-for="nav in navs" :to="{ path: `/list/${nav.type}/1` }" :key="nav.type">
                     {{nav.text}}
                 </router-link>
             </div>
@@ -29,7 +29,7 @@ import {
     mapMutations
 } from 'vuex'
 export default {
-    name: 'header',
+    name: 'dogheader',
     data () {
         return {
         }

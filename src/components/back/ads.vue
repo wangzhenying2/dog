@@ -5,14 +5,14 @@
                 <el-table-column prop="_id" label="id" header-align="center"></el-table-column>
                 <el-table-column prop="name" label="名称" header-align="center"></el-table-column>
                 <el-table-column prop="src" label="图片" header-align="center">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <img :src="scope.row.src" width="150px">
                     </template>
                 </el-table-column>
                 <el-table-column prop="url" label="外链地址" width="180px"></el-table-column>
                 <el-table-column prop="remark" label="备注" width="180px"></el-table-column>
                 <el-table-column label="操作" align="center" width="150px">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-button type="success" size="small" @click="edit(scope.row)">编辑</el-button>
                         <el-button type="info" size="small" @click="del(scope.row._id)">删除</el-button>
                     </template>

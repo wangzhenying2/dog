@@ -1,6 +1,6 @@
 <template>
 <div class="main">
-    <div class="index_ads" v-if="ads[0].url"><a :href="ads[0].url" target="_blank"><img :src="ads[0].src" width="100%"></a></div>
+    <div class="index_ads" v-if="ad1.url"><a :href="ad1.url" target="_blank"><img :src="ad1.src" width="100%"></a></div>
     <el-card class="box-card">
         <div slot="header" class="card_title">
             <span>热点时尚</span>
@@ -27,7 +27,7 @@
             </div>
         </div>
     </el-card>
-    <div class="index_ads" v-if="ads[1].url"><a :href="ads[1].url" target="_blank"><img :src="ads[1].src" width="100%"></a></div>
+    <div class="index_ads" v-if="ad2.url"><a :href="ad2.url" target="_blank"><img :src="ad2.src" width="100%"></a></div>
     <el-card class="box-card">
         <div slot="header" class="card_title">
             <span>犬界轶事</span>
@@ -57,7 +57,8 @@ export default {
             newsData: [],
             storyData: [],
             today: '',
-            ads: []
+            ad1: {},
+            ad2: {}
         }
     },
     created () {
@@ -96,14 +97,15 @@ export default {
             },
             sort: {'_id': -1},
             page: this.page,
-            pagesize: 10
+            pagesize: 8
         }).then(res => {
             this.storyData = res.result
         })
 
         // 获取广告位
         this.ajax.post('/api/ads', {}, (res) => {
-            this.ads = res.result
+            this.ad1 = res.result[0]
+            this.ad2 = res.result[1]
         })
     },
     methods: {

@@ -43,7 +43,7 @@ export default new Router({
         component: frontviewport,
         children: [
             { path: 'index', name: 'index', component: index },
-            { path: 'list/:type', name: 'list', component: listcomm },
+            { path: 'list/:type/:page', name: 'list', component: listcomm },
             { path: 'detail/:id', name: 'detail', component: detail }
         ]
     }, {

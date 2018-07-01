@@ -37,11 +37,14 @@ export default {
     },
     created () {
         this.type = this.$route.params.type
+        this.page = Number(this.$route.params.page)
+        console.log(this.page)
         this.toPage()
     },
     watch: {
         '$route' (to, from) {
             this.type = this.$route.params.type
+            this.page = Number(this.$route.params.page)
             this.toPage()
         }
     },
@@ -52,8 +55,7 @@ export default {
             this.toPage()
         },
         handleCurrentChange (val) {
-            this.page = val
-            this.toPage()
+            this.$router.push({ path: `/list/${this.type}/${val}` })
         },
         toPage () {
             this.getArts({

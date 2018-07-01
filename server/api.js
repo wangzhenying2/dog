@@ -476,6 +476,7 @@ router.post('/api/crawler', (req, res) => {
                                                 cImg.queue(val)
                                             })
                                         }
+                                        console.log('抓取完成')
                                         done()
                                     }
                                 })
@@ -485,7 +486,6 @@ router.post('/api/crawler', (req, res) => {
                     }
                 })
             }
-            console.log('抓取完成')
             done()
         }
     })

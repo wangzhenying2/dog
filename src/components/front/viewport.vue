@@ -5,10 +5,10 @@
     </div>
 </template>
 <script>
-import header from './header.vue'
+import dogheader from './header.vue'
 export default {
     components: {
-        'DogHeader': header
+        'DogHeader': dogheader
     }
 }
 </script>

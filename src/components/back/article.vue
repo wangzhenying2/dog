@@ -10,7 +10,7 @@
                 <el-table-column prop="createtime" label="创建日期" width="180px" align="center"></el-table-column>
                 <el-table-column prop="desc" label="描述" header-align="center"></el-table-column>
                 <el-table-column label="操作" align="center" width="150px">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-button type="success" size="small" @click="addFun(scope.row)">编辑</el-button>
                         <el-button type="info" size="small" @click="delFun(scope.row._id)">删除</el-button>
                     </template>
